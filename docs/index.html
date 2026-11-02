@@ -1977,6 +1977,16 @@ details>.block{margin-top:12px}
       .then(function(){return ROOT.getDirectoryHandle(F.library).then(function(d){return d.getFileHandle(F.readme).catch(function(){return writeAt(ROOT,F.library+"/"+F.readme,LIB_README);});});})
       .then(function(){DB.settings.libraryMode="root";LIBOK=true;persist();},function(){});
   }
+  // Сколько треков и звуков в библиотеке (только для библиотеки в главной папке)
+  var MEDIA={music:0,sfx:0,known:false},AUDIO=/\.(mp3|wav|aiff?|m4a|aac|flac|ogg)$/i;
+  function countDir(d){var it=d.values(),n=0;function step(){return it.next().then(function(r){if(r.done)return n;var v=r.value;
+      if(v.kind==="file"&&AUDIO.test(v.name)){n++;return step();}if(v.kind==="directory")return countDir(v).then(function(k){n+=k;return step();});return step();});}return step();}
+  function countLib(){
+    if(!ROOT||DB.settings.libraryMode!=="root"){MEDIA.known=false;return Promise.resolve(MEDIA);}
+    return ROOT.getDirectoryHandle(F.library).then(function(L){return Promise.all(["music","sfx"].map(function(k){return L.getDirectoryHandle(k).then(countDir,function(){return 0;});}));})
+      .then(function(r){MEDIA.music=r[0];MEDIA.sfx=r[1];MEDIA.known=true;return MEDIA;},function(){MEDIA.known=false;return MEDIA;});
+  }
+  function mediaOk(){return (MEDIA.known&&MEDIA.music>0&&MEDIA.sfx>0)||!!DB.settings.mediaDone;}
   function setRoot(h){ROOT=h;DB.settings.rootName=h?h.name:"";persist();handles={};}
   function pickRoot(){
     return window.showDirectoryPicker({id:"studio-root",mode:"readwrite"}).then(function(h){setRoot(h);return IDB.set("root",h).then(function(){return discover();});});
@@ -1989,7 +1999,7 @@ details>.block{margin-top:12px}
   function discover(){
     if(!ROOT)return Promise.resolve(0);
     var it=ROOT.values(),dirs=[];function step(){return it.next().then(function(r){if(r.done)return dirs;if(r.value.kind==="directory")dirs.push(r.value);return step();});}
-    return ensureLib().then(checkLib).then(step).then(function(ds){var n=0;return Promise.all(ds.map(function(d){return dirGetter(d).file(F.tech+"/project.json").then(function(f){if(!f)return;return f.text().then(function(t){
+    return ensureLib().then(checkLib).then(countLib).then(step).then(function(ds){var n=0;return Promise.all(ds.map(function(d){return dirGetter(d).file(F.tech+"/project.json").then(function(f){if(!f)return;return f.text().then(function(t){
         var o;try{o=JSON.parse(t);}catch(e){return;}var cc=norm(o.client||o);if(!cc||!cc.id||!cc.name||DB.deleted[cc.id])return;cc.dir=d.name;handles[cc.id]=d;
         var old=DB.clients[cc.id];if(!old||String(old.updatedAt||"")<String(cc.updatedAt||"")){if(old&&old.avatar&&!cc.avatar)cc.avatar=old.avatar;DB.clients[cc.id]=cc;n++;}else{old.dir=d.name;}});});})).then(function(){persist();return n;});});
   }
@@ -2038,6 +2048,7 @@ details>.block{margin-top:12px}
     var steps=[
       {id:"root",done:!!ROOT,t:"Выберите папку студии",d:ROOT?"«"+ROOT.name+"»: здесь будут папки клиентов и «"+F.library+"» для музыки и звуков.":DB.settings.rootName?"Браузер забыл доступ к «"+DB.settings.rootName+"» после перезапуска. Нажмите и разрешите.":"Здесь сайт будет создавать папки клиентов. В окне выбора откройте «Документы», нажмите «Новая папка», назовите «Студия» и нажмите «Выбрать». Chrome спросит разрешение — разрешите.",
         b:ROOT?"":(DB.settings.rootName?"Подключить «"+DB.settings.rootName+"»":"Выбрать папку")},
+      {id:"media",done:mediaOk(),t:"Добавьте музыку и звуки",d:mediaOk()?(MEDIA.known?"В библиотеке: треков — "+MEDIA.music+", звуков — "+MEDIA.sfx+".":"Отмечено вручную."):!ROOT?"Сначала выберите папку студии.":"Положите треки в папку «"+ROOT.name+" / "+F.library+" / music», звуки — в «sfx». Подойдут mp3, wav, aiff, m4a. Claude берёт музыку и звуки только оттуда."+(MEDIA.known?" Сейчас: треков — "+MEDIA.music+", звуков — "+MEDIA.sfx+".":""),b:mediaOk()||!ROOT?"":"Проверить"},
       {id:"plug",done:!!DB.settings.pluginDone,t:"Установите Claude Code и плагин",d:DB.settings.pluginDone?"Команды /studio:cut, /studio:graphics и другие доступны в Claude Code.":"Один раз. Одна команда в Терминале.",b:""},
       {id:"proj",done:hasProj,t:"Создайте первого клиента",d:hasProj?"Папки клиентов создаются сами.":"Укажите имя и тематику — сайт создаст папку клиента со всей структурой.",b:hasProj?"":"Новый клиент"}];
     var n=steps.filter(function(s){return s.done;}).length;
@@ -2047,6 +2058,8 @@ details>.block{margin-top:12px}
       '<ol class="obl">'+steps.map(function(s,i){var isCur=cur&&cur.id===s.id;
         return '<li class="'+(s.done?"done ":"")+(isCur?"cur":"")+'"><span class="obn">'+(s.done?CHECK:(i+1))+'</span><div class="obt"><b>'+esc(s.t)+'</b><span class="muted">'+esc(s.d)+'</span>'+
           (s.id==="plug"&&!s.done&&isCur?plugSteps():"")+
+          (s.id==="media"&&!s.done&&ROOT?'<label class="chk"><input type="checkbox" id="obmedia"> Готово, музыка и звуки добавлены</label>':"")+
+          (s.id==="media"&&s.done&&DB.settings.mediaDone?'<button type="button" class="lnk" id="obmediaundo">снять отметку</button>':"")+
           (s.id==="plug"&&s.done?'<span class="muted">Обновить плагин до новой версии:</span>'+cmdRow("claude plugin update "+plugId())+'<button type="button" class="lnk" id="obplugundo">отметить как не установленный</button>':"")+
           '</div>'+(s.b?'<button type="button" class="btn sm'+(isCur?" pri":"")+'" data-ob="'+s.id+'">'+esc(s.b)+'</button>':"")+'</li>';}).join("")+'</ol></section>';
   }
@@ -2080,7 +2093,9 @@ details>.block{margin-top:12px}
         .catch(function(e){if(e&&e.name==="AbortError")return;if(e&&(e.name==="SecurityError"||e.name==="NotAllowedError")){hasFSA=false;renderHome();return;}toast(e&&e.message||"Не удалось подключить папку");});};
     $("libb").onclick=function(){S.libOpen=!S.libOpen;renderHome();};
     $("app").querySelectorAll("[data-ob]").forEach(function(b){b.onclick=function(){var k=b.dataset.ob;
-      if(k==="root")$("rootb").click();else if(k==="lib"){S.libOpen=true;renderHome();var p=document.querySelector(".lib");if(p)p.scrollIntoView({block:"nearest"});}else if(k==="proj")$("newc").click();};});
+      if(k==="root")$("rootb").click();else if(k==="lib"){S.libOpen=true;renderHome();var p=document.querySelector(".lib");if(p)p.scrollIntoView({block:"nearest"});}else if(k==="proj")$("newc").click();else if(k==="media")countLib().then(function(m){toast(m.known?"Треков: "+m.music+", звуков: "+m.sfx:"Не удалось прочитать библиотеку");renderHome();});};});
+    if($("obmedia"))$("obmedia").onchange=function(){DB.settings.mediaDone=this.checked;persist();renderHome();};
+    if($("obmediaundo"))$("obmediaundo").onclick=function(){DB.settings.mediaDone=false;persist();renderHome();};
     $("app").querySelectorAll("[data-copy]").forEach(function(b){b.onclick=function(){copyText(b.dataset.copy,function(ok){toast(ok?"Скопировано. Вставьте в Терминал: Cmd + V, затем Enter":"Не удалось скопировать");});};});
     if($("obplug"))$("obplug").onchange=function(){DB.settings.pluginDone=this.checked;persist();renderHome();};
     if($("obplugundo"))$("obplugundo").onclick=function(){DB.settings.pluginDone=false;persist();renderHome();};
@@ -2402,6 +2417,8 @@ details>.block{margin-top:12px}
   try{if(window.claude&&window.claude.use)window.claude.use("sample").then(function(s){if(!s)return;SAMPLE=s;
     return s.limits().then(function(l){IMGLIM=l&&l.images&&l.images.maxCount?l.images:null;},function(){}).then(function(){if(S.view==="project"&&S.stage==="brand")renderProject();});},function(){});}catch(e){}
   render();
+  // вернулся на вкладку после копирования музыки — пересчитать библиотеку
+  window.addEventListener("focus",function(){if(S.view==="home"&&ROOT&&!mediaOk())countLib().then(function(){if(S.view==="home"&&mediaOk())renderHome();});});
   if(hasFSA)restoreRoot(false).then(function(ok){if(ok)return discover();}).then(function(){if(S.view==="home")render();},function(){});
 })();
 
