@@ -1,0 +1,2410 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Проекты студии</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Onest:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Нейтральный графитовый интерфейс студии: без акцентного цвета, чтобы не спорить с графикой клиента. Слева чеклист этапов, справа текущий этап. */
+:root{
+  --bg:#171616; --surface:#1d1c1c; --surface-2:#242222; --ink:#f4f2f0; --muted:#9a9a9f; --line:#2f2e2e;
+  --acc:#ecebe9; --acc-soft:#2b2a2a; --acc-line:#4a4848; --acc-ink:#171616; --warn:#f5b84a; --warn-soft:#3a2f1c; --bad:#f87171; --good:#4ade80;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){ --bg:#f5f4f2; --surface:#ffffff; --surface-2:#f0eeeb; --ink:#171615; --muted:#606068; --line:#e4e1dd;
+    --acc:#171615; --acc-soft:#ebe8e4; --acc-line:#c9c4be; --acc-ink:#ffffff; --warn:#9a6411; --warn-soft:#fbf0dc; --bad:#c62828; --good:#15803d; color-scheme:light; }
+}
+:root[data-theme="light"]{ --bg:#f5f4f2; --surface:#ffffff; --surface-2:#f0eeeb; --ink:#171615; --muted:#606068; --line:#e4e1dd;
+  --acc:#171615; --acc-soft:#ebe8e4; --acc-line:#c9c4be; --acc-ink:#ffffff; --warn:#9a6411; --warn-soft:#fbf0dc; --bad:#c62828; --good:#15803d; color-scheme:light; }
+
+*,*::before,*::after{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:1180px;margin:0 auto;padding-block:28px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:24px}
+.wrap.wide{max-width:1400px}
+h1{font-size:clamp(28px,4vw,44px);font-weight:700;letter-spacing:-.025em;line-height:1.05;margin:0;text-wrap:balance}
+h2{font-size:clamp(22px,2.6vw,28px);font-weight:700;letter-spacing:-.02em;line-height:1.15;margin:0;text-wrap:balance}
+h3{font-size:16px;font-weight:600;margin:0}
+h3.sub{font-size:19px;letter-spacing:-.01em;margin-top:8px}
+p{margin:0}
+.muted{color:var(--muted)}
+.hint{font-weight:400;font-size:13px}
+.tiny{font-size:12px}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.spacer{flex:1}
+.btn{height:38px;padding:0 14px;border-radius:9px;cursor:pointer;font:500 14px/1 var(--sans);border:1px solid var(--line);background:var(--surface);color:var(--ink);display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.btn:hover{border-color:var(--acc-line)}
+.btn.pri{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.btn.ghost{background:transparent}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.btn.sm{height:32px;font-size:13px;padding:0 11px}
+button:focus-visible,textarea:focus-visible,input:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+input[type=text],textarea{width:100%;font:400 15px/1.45 var(--sans);color:var(--ink);background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{resize:vertical;min-height:84px}
+textarea.mono{font-family:var(--mono);font-size:12.5px;min-height:120px}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:500;color:var(--muted)}
+label.f b{color:var(--ink);font-weight:600}
+.err{color:var(--bad);font-size:13px}
+ul.err{margin:4px 0 0;padding-left:18px}
+.okm{color:var(--good);font-size:13px}
+.form{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form .full{grid-column:1/-1}
+@media (max-width:720px){.form{grid-template-columns:1fr}}
+.empty{padding:28px;text-align:center;color:var(--muted);display:flex;flex-direction:column;gap:12px;align-items:center}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--acc);color:var(--acc-ink);padding:10px 16px;border-radius:10px;font-size:14px;font-weight:500;z-index:20;box-shadow:0 10px 30px rgba(0,0,0,.3);max-width:calc(100vw - 32px)}
+.remind{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:12px;background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 45%,transparent);color:var(--ink);font-size:14px;font-weight:500}
+.remind svg{flex:none;width:18px;height:18px;color:var(--warn);margin-top:1px}
+.badge{font-size:11px;font-weight:600;padding:3px 8px;border-radius:6px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.badge.on{background:color-mix(in srgb,var(--good) 18%,var(--surface-2));color:var(--ink)}
+
+/* Клиенты */
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.top .brand{font-weight:700;letter-spacing:-.01em;font-size:15px}
+.top .brand span{color:var(--muted);font-weight:500}
+.clients{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:12px}
+.cl{padding:16px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.clh{display:flex;gap:12px;align-items:center;min-width:0}
+.clt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.clt b{font-size:16px;font-weight:600}
+.clt .muted{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cl .btn.pri{align-self:flex-start}
+.cprog{display:flex;flex-direction:column;gap:6px}
+.cprog .meta{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.cprog .track{height:5px;border-radius:3px;background:var(--surface-2);overflow:hidden}
+.cprog .track i{display:block;height:100%;background:var(--acc);border-radius:3px}
+.av{flex:none;width:48px;height:48px;border-radius:50%;border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:600 15px var(--sans);cursor:pointer;padding:0;overflow:hidden;display:grid;place-items:center;position:relative}
+.av.sm{width:36px;height:36px;font-size:12px}
+.av img{width:100%;height:100%;object-fit:cover;display:block}
+.av:not([disabled]):hover::after{content:"фото";position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.55);color:#fff;font-size:10px}
+
+/* Проект */
+.ptop{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:var(--bg);border-bottom:1px solid var(--line)}
+.ptop-in{padding-block:10px!important;flex-direction:row!important;flex-wrap:wrap;align-items:center;gap:10px!important}
+.pname{display:flex;flex-direction:column;min-width:0;line-height:1.25}
+.pname b{font-size:15px}
+.pname .muted{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:40vw}
+.pcount{font-size:13px;font-variant-numeric:tabular-nums}
+.banner{padding:12px 14px}
+.proj{display:grid;grid-template-columns:280px minmax(0,1fr);gap:28px;align-items:start}
+@media (max-width:900px){.proj{grid-template-columns:1fr}}
+.steps{position:sticky;top:calc(env(safe-area-inset-top,0px) + 72px);display:flex;flex-direction:column;gap:14px}
+@media (max-width:900px){.steps{position:static}}
+.steps ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
+.steps li{display:flex;align-items:flex-start;gap:10px;padding:8px;border-radius:12px;border:1px solid transparent}
+.steps li.cur{background:var(--surface);border-color:var(--line)}
+.ck{flex:none;width:24px;height:24px;margin-top:2px;border-radius:7px;border:1.5px solid var(--acc-line);background:transparent;color:var(--acc-ink);cursor:pointer;display:grid;place-items:center;padding:0}
+.ck svg{width:15px;height:15px}
+li.done .ck{background:var(--acc);border-color:var(--acc)}
+.st{flex:1;min-width:0;text-align:left;border:0;background:none;color:var(--ink);font:inherit;cursor:pointer;padding:0;display:flex;flex-direction:column;gap:1px}
+.st b{font-size:14px;font-weight:600}
+.st span{font-size:12px;color:var(--muted)}
+li.done .st b{color:var(--muted)}
+li.cur.done .st b{color:var(--ink)}
+.fold{padding:14px;display:flex;flex-direction:column;gap:8px;border-style:dashed}
+.fold>.muted{font-size:13px}
+.fold.over{border-color:var(--acc);background:var(--acc-soft)}
+.fold p{font-size:13px}
+.stage-main{display:flex;flex-direction:column;gap:22px;min-width:0}
+.shead{display:flex;flex-direction:column;gap:4px}
+.nav{display:flex;gap:10px;align-items:center;border-top:1px solid var(--line);padding-top:16px;flex-wrap:wrap}
+.danger{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}
+
+/* Варианты */
+.grp{display:flex;flex-direction:column;gap:10px}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,200px),1fr));gap:10px}
+.opts.sm{grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr))}
+.opt{display:flex;flex-direction:column;text-align:left;padding:0;cursor:pointer;color:var(--ink);font:inherit;overflow:hidden;min-width:0}
+.opt .pv{aspect-ratio:16/9;max-width:100%;background:repeating-linear-gradient(135deg,var(--surface-2) 0 10px,var(--surface) 10px 20px);display:grid;place-items:center;color:var(--muted);font-size:12px;border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.opt .pv img,.opt .pv video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.opt .pv .sw{position:absolute;inset:auto 10px 10px 10px;display:flex;gap:4px}
+.opt .pv .sw i{flex:1;height:14px;border-radius:4px;box-shadow:inset 0 0 0 1px rgba(127,127,127,.3)}
+.opt .pv .ff{position:absolute;left:12px;top:10px;font-size:20px;letter-spacing:-.02em;color:var(--ink)}
+.opt .tx{display:flex;flex-direction:column;gap:4px;padding:12px 14px 14px}
+.opt .tx b{font-size:14px;font-weight:600}
+.opt .tx span{font-size:13px;color:var(--muted)}
+.opt[aria-checked="true"]{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc)}
+.opt[aria-checked="true"] .tx>b::after{content:" ✓"}
+.opt.dis{opacity:.45;cursor:not-allowed}
+.rec{position:absolute;right:8px;top:8px;font-size:11px;font-weight:600;padding:3px 7px;border-radius:6px;background:var(--acc);color:var(--acc-ink);z-index:2}
+.rec.in{position:static;display:inline-block;margin-left:4px;vertical-align:1px;font-size:10px;padding:2px 6px}
+.achips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{flex:none;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 13px/1 var(--sans);padding:9px 13px;border-radius:9px;cursor:pointer;white-space:nowrap}
+.chip[aria-pressed="true"],.chip[aria-checked="true"]{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.shp{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:10px}
+.shp i{display:block;border:2px solid var(--ink);border-radius:6px;background:color-mix(in srgb,var(--ink) 8%,transparent);position:relative}
+.shp i::after{content:"";position:absolute;left:50%;bottom:0;width:30%;aspect-ratio:1/1.1;transform:translateX(-50%);border-radius:50% 50% 0 0;background:color-mix(in srgb,var(--ink) 35%,transparent)}
+.shp .fh{width:58%;aspect-ratio:16/9}
+.shp .fv{height:76%;aspect-ratio:9/16}
+.shp.h .fv,.shp.v .fh{display:none}
+.shp.auto .fh{width:44%}
+.shp.auto .fv{height:68%}
+.shp.auto i{border-style:dashed}
+.bbdoc{position:absolute;inset:18% 30%;border:2px solid var(--ink);border-radius:6px;display:flex;flex-direction:column;gap:8%;padding:10%;background:color-mix(in srgb,var(--ink) 6%,transparent)}
+.bbdoc i{display:block;height:12%;border-radius:3px;background:color-mix(in srgb,var(--ink) 30%,transparent)}
+.bbdoc i:first-child{width:60%;height:18%;background:var(--ink)}
+
+/* Промт и результат */
+.block{padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+pre.prompt{margin:0;max-height:340px;overflow:auto;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:14px;font:12.5px/1.55 var(--mono);white-space:pre-wrap;word-break:break-word}
+pre.tree{max-height:none;white-space:pre}
+.chk{display:inline-flex;gap:8px;align-items:center;font-size:14px;cursor:pointer}
+.chk input{width:18px;height:18px;accent-color:var(--acc)}
+.chk.big{padding:14px 16px;font-size:15px;font-weight:600;align-self:flex-start}
+.warn{font-size:13px;color:var(--warn);font-weight:500}
+.onote{font-size:12.5px;font-weight:500;padding:5px 9px;border-radius:8px;background:var(--surface-2);color:var(--ink)}
+.onote.hard{background:var(--warn-soft);border:1px solid color-mix(in srgb,var(--warn) 45%,transparent)}
+.vbox{aspect-ratio:16/9;max-width:100%;border-radius:10px;overflow:hidden;background:var(--surface-2);display:grid;place-items:center;text-align:center;padding:8px;font-size:13px}
+.vbox video{width:100%;height:100%;object-fit:contain;background:#000;display:block}
+.vbox:has(video){padding:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px}
+.tile{display:flex;flex-direction:column;gap:10px;min-width:0;padding:12px;background:var(--surface-2);border:1px solid var(--line);border-radius:14px}
+.tile.on{border-color:var(--acc)}
+.tile .vbox{background:var(--surface)}
+.tmeta{display:flex;gap:10px;align-items:center}
+.tmeta b{flex:1;min-width:0;font-size:14px;font-weight:600;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.tmeta b .k{font-size:12px;font-weight:500;color:var(--muted);font-variant-numeric:tabular-nums}
+.tag{font-size:11px;font-weight:500;padding:2px 7px;border-radius:6px;background:var(--surface);color:var(--muted)}
+.like{flex:none;width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--muted);display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.like svg{width:18px;height:18px}
+.like[aria-pressed="true"]{color:var(--acc-ink);background:var(--acc);border-color:var(--acc)}
+.bmeta{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}
+.tile textarea{min-height:40px;font-size:14px;background:var(--surface)}
+
+/* Брендбук: токены клиента задаются через style на .bb */
+.bb{
+  --b-light:#f6f7f9; --b-light2:#e2e5ea; --b-dark:#16181d; --b-dark2:#0a0b0d; --b-card:#fff; --b-ink-l:#0a0b0d; --b-muted-l:#6b717c;
+  --b-text-d:#fff; --b-muted-d:#8a93a3; --b-metal:#b8bdc6; --b-graph:#3a3e46; --b-acc:#2f7bf5; --b-glow:#d6e6ff; --b-pos:#34c759; --b-neg:#ff453a;
+  --b-glow-sh:rgba(160,200,255,.55); --b-on-acc:#0a0b0d; --b-font-d:"Onest"; --b-font-b:"Onest"; --b-w-d:800; --b-w-b:500;
+  display:flex;flex-direction:column;gap:14px
+}
+.bbhead{padding:16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.bbhead-t{display:flex;flex-direction:column;gap:6px;min-width:0;flex:1}
+.logo-slot{flex:none;width:96px;height:96px;border-radius:14px;border:1px dashed var(--line);display:grid;place-items:center;background:repeating-linear-gradient(45deg,var(--surface-2) 0 6px,var(--surface) 6px 12px);overflow:hidden;font-size:13px}
+.logo-slot img{max-width:84%;max-height:84%;object-fit:contain}
+.tok{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:12px;align-items:start}
+@media (max-width:1060px){.tok{grid-template-columns:1fr}}
+.panel{padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.swl{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+.s{display:flex;flex-direction:column;gap:4px;font-size:12px;min-width:0}
+.s i{display:block;height:44px;border-radius:10px;box-shadow:inset 0 0 0 1px rgba(127,127,127,.25)}
+.s b{font-weight:600}
+.s span{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.tdemo{display:flex;flex-direction:column;gap:2px}
+.tdemo .t1{font-family:var(--b-font-d),sans-serif;font-weight:var(--b-w-d);font-size:36px;line-height:1.05;letter-spacing:-.03em}
+.tdemo .t2{font-family:var(--b-font-b),sans-serif;font-weight:var(--b-w-b);font-size:17px;margin-top:12px}
+.tdemo .t3{font-size:12px;color:var(--muted)}
+.exgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:12px}
+.exgrid.v{grid-template-columns:repeat(auto-fill,minmax(min(100%,170px),1fr))}
+.exgrid figure{margin:0;display:flex;flex-direction:column;gap:6px;min-width:0}
+.exgrid figcaption{font-size:12px;color:var(--muted)}
+.exw{aspect-ratio:16/9;max-width:100%;border-radius:10px;overflow:hidden;container-type:inline-size;box-shadow:0 0 0 1px var(--line)}
+.exgrid.v .exw{aspect-ratio:9/16}
+.ex{position:relative;width:100%;height:100%;display:flex;flex-direction:column;justify-content:center;gap:2.5cqw;padding:8cqw;font-family:var(--b-font-b),sans-serif;font-weight:var(--b-w-b)}
+.ex .d{font-family:var(--b-font-d),sans-serif;font-weight:var(--b-w-d);letter-spacing:-.03em;line-height:1.05;font-size:7cqw}
+.ex.center{align-items:center;text-align:center}
+.ex.dark{background:radial-gradient(80% 70% at 50% 40%,var(--b-dark) 0%,var(--b-dark2) 80%);color:var(--b-text-d)}
+.ex.dark .mt{color:var(--b-muted-d);font-size:4cqw}
+.ex.light{background:radial-gradient(120% 90% at 50% 0%,var(--b-card) 0%,var(--b-light) 50%,var(--b-light2) 100%);color:var(--b-ink-l)}
+.ex .big{font-size:9cqw}
+.ex .num{font-size:30cqw;line-height:.9;background:linear-gradient(100deg,var(--b-metal),var(--b-text-d) 40%,var(--b-glow) 55%,var(--b-text-d) 70%);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 3cqw var(--b-glow-sh))}
+.exlogo{max-width:30cqw;max-height:16cqw;object-fit:contain}
+.exmark{width:13cqw;height:13cqw;border-radius:50%;display:grid;place-items:center;background:var(--b-acc);color:var(--b-on-acc);font-family:var(--b-font-d),sans-serif;font-weight:var(--b-w-d);font-size:5cqw}
+.ex.frame{background:linear-gradient(160deg,var(--b-light2),var(--b-graph));justify-content:flex-end;padding:7cqw}
+.ex.frame .person{position:absolute;left:50%;bottom:0;width:34cqw;height:48cqw;transform:translateX(-50%);border-radius:50% 50% 0 0/38% 38% 0 0;background:color-mix(in srgb,var(--b-dark2) 45%,transparent)}
+.ex.frame .person::before{content:"";position:absolute;left:50%;top:-20cqw;width:17cqw;height:17cqw;transform:translateX(-50%);border-radius:50%;background:inherit}
+.lt{position:relative;align-self:flex-start;display:flex;flex-direction:column;gap:.6cqw;padding:2.4cqw 4cqw;border-radius:3cqw;background:color-mix(in srgb,var(--b-dark2) 55%,transparent);backdrop-filter:blur(2cqw);-webkit-backdrop-filter:blur(2cqw);border:.2cqw solid color-mix(in srgb,#fff 30%,transparent);color:#fff;border-left:1cqw solid var(--b-acc)}
+.lt .d{font-size:5cqw}
+.lt span{font-size:3.2cqw;opacity:.85}
+.bars{display:grid;grid-template-columns:auto 1fr;gap:2cqw 3cqw;align-items:center;font-size:3.6cqw;color:var(--b-muted-l);margin-top:2cqw}
+.bars i{display:block;height:6cqw;border-radius:1.6cqw;background:linear-gradient(90deg,var(--b-graph),var(--b-metal))}
+.bars i.a{background:var(--b-acc)}
+.ex ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2.4cqw;font-size:4.4cqw;font-weight:600}
+.ex li{display:flex;align-items:center;gap:2.4cqw;padding:2.2cqw 3cqw;background:var(--b-card);border-radius:2.4cqw;box-shadow:0 1cqw 3cqw rgba(30,40,60,.1)}
+.ex li i{flex:none;width:5.4cqw;height:5.4cqw;border-radius:50%;display:grid;place-items:center;font-style:normal;color:#fff;font-size:3.6cqw}
+.ex li i.pos{background:var(--b-pos)} .ex li i.neg{background:var(--b-neg)}
+.qbar{display:block;width:12cqw;height:1.2cqw;border-radius:1cqw;background:var(--b-acc)}
+.ex.dark .d em{font-style:normal;color:var(--b-glow);text-shadow:0 0 3cqw var(--b-glow-sh)}
+.tex-grain .ex::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.3;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.hidden{display:none!important}
+
+/* Связи этапов */
+.uses{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;font-size:13px}
+.dep{border:1px dashed var(--acc-line);background:transparent;color:var(--ink);font:500 12.5px/1 var(--sans);padding:7px 10px;border-radius:8px;cursor:pointer}
+.dep.ok{border-style:solid;background:var(--surface)}
+.uses .warn{margin-left:4px}
+.block.tight{padding:14px 16px;gap:6px}
+.msg{font-size:13px;color:var(--muted)}
+.msg.err{color:var(--bad)}
+.hist{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.hist div{padding-left:10px;border-left:2px solid var(--line)}
+.hist b{color:var(--ink);font-weight:500}
+details summary{cursor:pointer;font-size:14px;font-weight:500;color:var(--muted)}
+details[open] summary{color:var(--ink)}
+/* Лейблы Premiere */
+.lrow{display:flex;flex-direction:column;gap:8px}
+.lt2{font-size:13px;color:var(--muted)}
+.lchips{display:flex;flex-wrap:wrap;gap:6px}
+.lchip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:500 12px/1 var(--sans);padding:6px 9px 6px 6px;border-radius:8px;cursor:pointer}
+.lchip i{width:16px;height:16px;border-radius:4px;display:block}
+.lchip[aria-checked="true"]{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc);font-weight:600}
+
+/* Брендбук как у компаний */
+.bsec{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px;min-width:0}
+.bh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.bh .no{font-family:var(--b-font-d),sans-serif;font-weight:var(--b-w-d);font-size:22px;letter-spacing:-.03em;color:var(--muted)}
+.bh h3{font-size:13px;letter-spacing:.12em;text-transform:uppercase}
+.bcover{background:radial-gradient(90% 120% at 85% 10%,var(--b-dark) 0%,var(--b-dark2) 70%);color:var(--b-text-d);border:0;min-height:260px;justify-content:space-between;padding:28px;position:relative;overflow:hidden}
+.bcover::after{content:"";position:absolute;right:-10%;bottom:-40%;width:55%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,var(--b-glow-sh),transparent 65%);pointer-events:none}
+.cv-in{display:flex;flex-direction:column;gap:8px;position:relative;z-index:1}
+.cv-in .lbl{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--b-muted-d)}
+.cv-in .d{font-family:var(--b-font-d),sans-serif;font-weight:var(--b-w-d);font-size:clamp(34px,5vw,60px);line-height:1;letter-spacing:-.035em}
+.cv-in .mt{color:var(--b-muted-d);font-size:15px}
+.cvlogo img{max-height:56px;max-width:180px;object-fit:contain}
+.bmark{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:var(--b-acc);color:var(--b-on-acc);font-family:var(--b-font-d),sans-serif;font-weight:var(--b-w-d);font-size:20px}
+.cvname{position:relative;z-index:1;font-size:12px;color:var(--b-muted-d);align-self:flex-end}
+.ttwo{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:12px}
+.tcard{background:var(--b-dark2);color:var(--b-text-d);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:10px;min-width:0;overflow:hidden}
+.fname{font-size:13px;letter-spacing:.08em}
+.wpill{font-size:10.5px;padding:4px 9px;border-radius:99px;border:1px solid color-mix(in srgb,var(--b-text-d) 35%,transparent);color:var(--b-muted-d)}
+.wpill.on{color:var(--b-text-d);border-color:var(--b-text-d)}
+.aa{font-size:clamp(80px,11vw,140px);line-height:.95;letter-spacing:-.04em}
+.abc{font-size:13px;letter-spacing:.06em;line-height:1.6;word-break:break-all;color:var(--b-text-d)}
+.role{font-size:12px;color:var(--b-muted-d)}
+.tickets{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,150px),1fr));gap:12px}
+.ticket{position:relative;border-radius:14px;padding:44px 16px 16px;display:flex;flex-direction:column;gap:3px;min-height:170px;box-shadow:inset 0 0 0 1px rgba(127,127,127,.25);overflow:hidden}
+.ticket::before,.ticket::after{content:"";position:absolute;top:62%;width:14px;height:14px;border-radius:50%;background:var(--surface)}
+.ticket::before{left:-7px}.ticket::after{right:-7px}
+.ticket .tn{font-size:11px;opacity:.75;position:absolute;top:14px;left:16px}
+.ticket b{font-family:var(--b-font-d),sans-serif;font-weight:var(--b-w-d);font-size:20px;letter-spacing:-.01em;margin-top:auto}
+.ticket span{font-size:11.5px;opacity:.85}
+.ticket .code{display:block;height:18px;margin-top:10px;background:repeating-linear-gradient(90deg,currentColor 0 2px,transparent 2px 4px,currentColor 4px 5px,transparent 5px 8px,currentColor 8px 11px,transparent 11px 13px);opacity:.8}
+.minor{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:12px;color:var(--muted)}
+.minor span{display:inline-flex;align-items:center;gap:6px}
+.minor i{width:14px;height:14px;border-radius:4px;box-shadow:inset 0 0 0 1px rgba(127,127,127,.3)}
+.minor code{font-family:var(--mono);font-size:11px}
+.ltiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,180px),1fr));gap:12px}
+.ltile{aspect-ratio:16/10;border-radius:12px;display:grid;place-items:center;box-shadow:inset 0 0 0 1px rgba(127,127,127,.25)}
+.ltile.empty{background:repeating-linear-gradient(45deg,var(--surface-2) 0 8px,var(--surface) 8px 16px);aspect-ratio:auto;height:96px}
+.ltile .clear{padding:14px;border:1px dashed rgba(127,127,127,.6);border-radius:6px;display:grid;place-items:center}
+.ltile img{max-width:120px;max-height:56px;object-fit:contain;display:block}
+
+/* Запуск этапа и референсы */
+.block.act{border-color:var(--acc-line)}
+.howto{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--muted)}
+.howto code,.block code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);padding:2px 6px;border-radius:6px;color:var(--ink)}
+.refgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px}
+.refgrid figure{margin:0;position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--surface-2)}
+.refgrid img{width:100%;height:100%;object-fit:cover;display:block}
+.rx{position:absolute;top:4px;right:4px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;cursor:pointer;font-size:15px;line-height:1}
+.refadd{aspect-ratio:1;border-radius:10px;border:1px dashed var(--acc-line);background:transparent;color:var(--muted);font:500 13px var(--sans);cursor:pointer}
+.settings{margin-top:12px}
+details>.block{margin-top:12px}
+
+/* Главная папка и библиотека */
+.fbtn svg{width:17px;height:17px;flex:none}
+.fbtn span{max-width:220px;overflow:hidden;text-overflow:ellipsis}
+.remind.soft{background:var(--surface);border-color:var(--line)}
+.remind.soft svg{color:var(--muted)}
+.cdir{display:inline-flex;align-items:center;gap:6px;min-width:0}
+.cdir svg{width:14px;height:14px;flex:none}
+.fold .muted svg{width:13px;height:13px;vertical-align:-2px}
+.lib .opt[aria-disabled="true"]{opacity:.5;cursor:not-allowed}
+
+/* Начало работы */
+.ob{padding:20px;display:flex;flex-direction:column;gap:14px}
+.ob h2{font-size:20px}
+.obl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.obl li{display:flex;gap:14px;align-items:flex-start;padding:12px;border-radius:12px;border:1px solid transparent}
+.obl li.cur{background:var(--surface-2);border-color:var(--line)}
+.obn{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:13px;border:1.5px solid var(--acc-line);color:var(--muted)}
+.obl li.cur .obn{border-color:var(--acc);color:var(--ink)}
+.obl li.done .obn{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
+.obn svg{width:15px;height:15px}
+.obt{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.obt b{font-size:15px;font-weight:600}
+.obl li.done .obt b{color:var(--muted)}
+.obt .muted{font-size:13.5px}
+.obt pre.prompt{max-height:none;white-space:pre-wrap}
+.obl li>.btn{flex:none;align-self:center}
+.obdone{display:flex;gap:10px;align-items:center;font-size:13px;color:var(--muted)}
+.obdone span{display:inline-flex;gap:6px;align-items:center}
+.obdone svg{width:14px;height:14px}
+.cdel{display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:10px;background:var(--surface-2);font-size:13px}
+@media (max-width:600px){.obl li{flex-wrap:wrap}.obl li>.btn{margin-left:42px}}
+
+.lnk{border:0;background:none;padding:0;color:var(--muted);font:inherit;font-size:13px;text-decoration:underline;cursor:pointer;align-self:flex-start}
+.sub{margin:4px 0 0;padding-left:20px;display:flex;flex-direction:column;gap:14px;font-size:14px}
+.sub li{display:list-item;line-height:1.5}
+.sub li>.cmd,.sub li>input,.sub li>span.muted{margin-top:8px}
+.sub li>span.muted{display:block}
+.sub .cmd{max-width:100%}
+.sub li::marker{color:var(--muted);font-weight:600}
+.sub code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);padding:1px 5px;border-radius:5px}
+.cmd{display:flex;gap:8px;align-items:center;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:8px 8px 8px 12px;min-width:0}
+.cmd code{flex:1;min-width:0;background:none;padding:0;font-size:12.5px;overflow-x:auto;white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script id="cfg" type="application/json">
+{
+ "version": 2,
+ "plugin": {
+  "repo": "creator887-code/kit",
+  "marketplace": "kit",
+  "name": "studio"
+ },
+ "reminder": "Обязательно прикрепи референсы — без них результат будет неточным",
+ "stages": [
+  {
+   "id": "info",
+   "title": "Информация",
+   "desc": "Имя, сфера, аудитория, формат",
+   "groups": [
+    "format"
+   ],
+   "auto": "Заполнены имя, тематика, формат и аудитория"
+  },
+  {
+   "id": "brand",
+   "title": "Брендбук",
+   "desc": "Обложка, шрифты, цвета, лого, примеры графики",
+   "groups": [
+    "style"
+   ],
+   "refs": true,
+   "auto": "Стоит отметка «Утверждён клиентом»",
+   "uses": []
+  },
+  {
+   "id": "cut",
+   "title": "Нарезка",
+   "desc": "Нарезать или пометить паузы и дубли, XML",
+   "groups": [
+    "cutMode",
+    "cutPauses",
+    "cutTakes"
+   ],
+   "note": {
+    "level": "hard",
+    "text": "Обязательно исходник в «1. Исходники» и Claude Code."
+   },
+   "auto": "В «4. Premiere Pro/1. Нарезка» есть версия с cut.xml",
+   "uses": []
+  },
+  {
+   "id": "graphics",
+   "title": "Графика",
+   "desc": "Тестовые анимации, бироллы, фоны",
+   "groups": [
+    "gLayouts",
+    "tracking",
+    "motion"
+   ],
+   "refs": false,
+   "note": {
+    "level": "soft",
+    "text": "Нужен утверждённый брендбук. Исходник желательно: графика встанет на реальные кадры."
+   },
+   "auto": "В «4. Premiere Pro/2. Графика» есть версия с manifest.json",
+   "uses": [
+    "brand",
+    "cut"
+   ]
+  },
+  {
+   "id": "test",
+   "title": "Тестовая минута",
+   "desc": "Частота вставок, музыка, SFX, субтитры",
+   "groups": [
+    "pace",
+    "music",
+    "sfx",
+    "subs"
+   ],
+   "refs": false,
+   "note": {
+    "level": "hard",
+    "text": "Нужны нарезка и графика. Запускать в Claude Code."
+   },
+   "auto": "В «4. Premiere Pro/3. Тестовая минута» есть версия с project.xml",
+   "uses": [
+    "graphics",
+    "cut"
+   ]
+  },
+  {
+   "id": "final",
+   "title": "Целый ролик",
+   "desc": "Проект Premiere Pro со всем на таймлайне",
+   "groups": [],
+   "refs": false,
+   "note": {
+    "level": "hard",
+    "text": "Нужна утверждённая тестовая минута. Запускать в Claude Code."
+   },
+   "auto": "В «4. Premiere Pro/4. Ролик» есть версия с project.xml",
+   "uses": [
+    "test"
+   ]
+  }
+ ],
+ "groups": {
+  "format": {
+   "title": "Формат роликов",
+   "preview": true,
+   "options": [
+    {
+     "id": "h",
+     "name": "Горизонтальный",
+     "desc": "YouTube, широкий кадр",
+     "preview": null,
+     "params": {
+      "format": "h",
+      "safe": "Текст не ближе 5% к краю, низ кадра под субтитры"
+     }
+    },
+    {
+     "id": "v",
+     "name": "Вертикальный",
+     "desc": "Shorts, Reels, TikTok",
+     "preview": null,
+     "params": {
+      "format": "v",
+      "safe": "Верх 15% и низ 25% кадра свободны под интерфейс площадки, боковые поля 6%"
+     }
+    },
+    {
+     "id": "auto",
+     "name": "Не важно, по размеру кадра",
+     "desc": "Вставки подстраиваются под кадр исходника",
+     "preview": null,
+     "params": {
+      "format": "auto",
+      "safe": "Зоны по ориентации исходника: горизонтальный — 5% от края, вертикальный — верх 15%, низ 25%"
+     }
+    }
+   ]
+  },
+  "style": {
+   "title": "Откуда берём стиль",
+   "preview": true,
+   "options": [
+    {
+     "id": "refs",
+     "name": "Собрать по референсам",
+     "desc": "Референсы клиента → Claude собирает палитру, шрифты и правила.",
+     "preview": null,
+     "params": {}
+    },
+    {
+     "id": "exact",
+     "name": "Как в брендбуке клиента",
+     "desc": "Брендбук клиента лежит в brand/. Переносим его без изменений.",
+     "preview": null,
+     "params": {}
+    }
+   ]
+  },
+  "motion": {
+   "title": "Анимации",
+   "preview": true,
+   "options": [
+    {
+     "id": "fast",
+     "name": "Быстрые",
+     "desc": "6–10 кадров, резкие вылеты.",
+     "preview": null,
+     "params": {
+      "motion": {
+       "label": "Быстрые",
+       "inFrames": 8,
+       "outFrames": 6,
+       "ease": "cubic-bezier(.7,0,.15,1)",
+       "cycle": 4
+      }
+     }
+    },
+    {
+     "id": "smooth",
+     "name": "Плавные",
+     "desc": "12–20 кадров, ease-in-out.",
+     "preview": null,
+     "params": {
+      "motion": {
+       "label": "Плавные",
+       "inFrames": 15,
+       "outFrames": 12,
+       "ease": "cubic-bezier(.45,0,.2,1)",
+       "cycle": 6
+      }
+     }
+    },
+    {
+     "id": "slow",
+     "name": "Медленные",
+     "desc": "Наплывы, параллакс, 1–2 секунды.",
+     "preview": null,
+     "params": {
+      "motion": {
+       "label": "Медленные",
+       "inFrames": 38,
+       "outFrames": 25,
+       "ease": "cubic-bezier(.3,0,.25,1)",
+       "cycle": 9
+      }
+     }
+    }
+   ]
+  },
+  "pace": {
+   "title": "Частота вставок",
+   "options": [
+    {
+     "id": "fast",
+     "name": "Быстрый",
+     "desc": "Вставка каждые 3–5 секунд.",
+     "preview": null,
+     "params": {
+      "density": {
+       "label": "Быстрый",
+       "minSec": 3,
+       "maxSec": 5
+      }
+     }
+    },
+    {
+     "id": "mid",
+     "name": "Средний",
+     "desc": "Каждые 8–12 секунд.",
+     "preview": null,
+     "params": {
+      "density": {
+       "label": "Средний",
+       "minSec": 8,
+       "maxSec": 12
+      }
+     }
+    },
+    {
+     "id": "slow",
+     "name": "Медленный",
+     "desc": "Каждые 20–30 секунд.",
+     "preview": null,
+     "params": {
+      "density": {
+       "label": "Медленный",
+       "minSec": 20,
+       "maxSec": 30
+      }
+     }
+    }
+   ]
+  },
+  "music": {
+   "title": "Музыка",
+   "hint": "только из библиотеки студии",
+   "options": [
+    {
+     "id": "energetic",
+     "name": "Энергичная",
+     "desc": "Держит темп, акценты на сменах кадра.",
+     "preview": null,
+     "params": {
+      "music": {
+       "label": "Энергичная",
+       "mood": "energetic"
+      }
+     }
+    },
+    {
+     "id": "neutral",
+     "name": "Нейтральный фон",
+     "desc": "Тихая подложка, не спорит с голосом.",
+     "preview": null,
+     "params": {
+      "music": {
+       "label": "Нейтральный фон",
+       "mood": "neutral"
+      }
+     }
+    },
+    {
+     "id": "cinematic",
+     "name": "Кинематографичная",
+     "desc": "Нарастания, паузы, эмоция.",
+     "preview": null,
+     "params": {
+      "music": {
+       "label": "Кинематографичная",
+       "mood": "cinematic"
+      }
+     }
+    },
+    {
+     "id": "none",
+     "name": "Без музыки",
+     "desc": "Только голос и звуки.",
+     "preview": null,
+     "params": {
+      "music": {
+       "label": "Без музыки",
+       "mood": "none"
+      }
+     }
+    }
+   ]
+  },
+  "sfx": {
+   "title": "SFX",
+   "options": [
+    {
+     "id": "rich",
+     "name": "Насыщенно",
+     "desc": "Звук на каждую вставку и смену кадра.",
+     "preview": null,
+     "params": {
+      "sfx": {
+       "label": "Насыщенно",
+       "level": "rich"
+      }
+     }
+    },
+    {
+     "id": "accent",
+     "name": "Акцентно",
+     "desc": "Только на ключевых вставках.",
+     "preview": null,
+     "params": {
+      "sfx": {
+       "label": "Акцентно",
+       "level": "accent"
+      }
+     }
+    },
+    {
+     "id": "min",
+     "name": "Минимум",
+     "desc": "Почти без звуков.",
+     "preview": null,
+     "params": {
+      "sfx": {
+       "label": "Минимум",
+       "level": "minimal"
+      }
+     }
+    }
+   ]
+  },
+  "subs": {
+   "title": "Субтитры",
+   "options": [
+    {
+     "id": "dynamic",
+     "name": "Динамичные по словам",
+     "desc": "Подсветка слова, крупно, в ритм речи.",
+     "preview": null,
+     "params": {
+      "subtitles": {
+       "label": "Динамичные по словам",
+       "type": "dynamic"
+      }
+     }
+    },
+    {
+     "id": "classic",
+     "name": "Классические",
+     "desc": "Две строки внизу кадра.",
+     "preview": null,
+     "params": {
+      "subtitles": {
+       "label": "Классические",
+       "type": "classic"
+      }
+     }
+    },
+    {
+     "id": "none",
+     "name": "Без субтитров",
+     "desc": "",
+     "preview": null,
+     "params": {
+      "subtitles": {
+       "label": "Без субтитров",
+       "type": "none"
+      }
+     }
+    }
+   ]
+  },
+  "cutPauses": {
+   "title": "Плотность",
+   "options": [
+    {
+     "id": "tight",
+     "name": "Плотно",
+     "desc": "Убрать паузы длиннее 0,3 с. Динамичная речь.",
+     "params": {
+      "maxPause": 0.3,
+      "label": "плотно, паузы до 0,3 с"
+     }
+    },
+    {
+     "id": "natural",
+     "name": "Естественно",
+     "desc": "Убрать паузы длиннее 0,6 с. Речь дышит.",
+     "params": {
+      "maxPause": 0.6,
+      "label": "естественно, паузы до 0,6 с"
+     }
+    },
+    {
+     "id": "soft",
+     "name": "Бережно",
+     "desc": "Убрать только паузы длиннее 1,2 с.",
+     "params": {
+      "maxPause": 1.2,
+      "label": "бережно, паузы до 1,2 с"
+     }
+    }
+   ],
+   "hint": "для нарезки и для пометки"
+  },
+  "cutTakes": {
+   "title": "Дубли",
+   "options": [
+    {
+     "id": "last",
+     "name": "Последний полный дубль",
+     "desc": "Если фраза повторяется, оставить последний вариант, сказанный целиком.",
+     "params": {
+      "rule": "если фраза повторяется, оставь последний вариант, сказанный целиком без оговорок"
+     }
+    },
+    {
+     "id": "best",
+     "name": "Лучший по смыслу",
+     "desc": "Сравнить дубли и оставить самый чёткий и уверенный.",
+     "params": {
+      "rule": "если фраза повторяется, сравни дубли и оставь самый чёткий и уверенный по подаче"
+     }
+    }
+   ]
+  },
+  "cutMode": {
+   "title": "Что сделать",
+   "options": [
+    {
+     "id": "cut",
+     "name": "Нарезать",
+     "desc": "Вырезать паузы и неудачные дубли. На таймлайне остаётся чистая речь.",
+     "params": {}
+    },
+    {
+     "id": "mark",
+     "name": "Пометить",
+     "desc": "Ничего не удалять: разрезать по границам и покрасить проблемные куски лейблами. Решаете сами.",
+     "params": {}
+    }
+   ]
+  },
+  "gLayouts": {
+   "title": "Раскладки графики",
+   "hint": "можно выбрать несколько",
+   "multi": true,
+   "options": [
+    {
+     "id": "broll",
+     "name": "Биролл на весь кадр",
+     "desc": "Графика или иллюстрация вместо кадра спикера.",
+     "params": {
+      "rule": "биролл на весь кадр: графика вместо кадра спикера, голос продолжает звучать"
+     }
+    },
+    {
+     "id": "side",
+     "name": "Сбоку от спикера",
+     "desc": "Плашка или схема рядом, лицо свободно.",
+     "params": {
+      "rule": "сбоку от спикера: графика в свободной части кадра, лицо и руки не перекрывать"
+     }
+    },
+    {
+     "id": "bottom",
+     "name": "Снизу",
+     "desc": "Плашки, титры, подписи в нижней трети.",
+     "params": {
+      "rule": "снизу: плашки и титры в нижней трети, выше зоны субтитров"
+     }
+    },
+    {
+     "id": "panel",
+     "name": "На фоне бренда",
+     "desc": "Спикер в окне, вокруг фон и графика бренда.",
+     "params": {
+      "rule": "на фоне бренда: кадр спикера уменьшен в окне, вокруг фон бренда и графика"
+     }
+    },
+    {
+     "id": "blur",
+     "name": "Блюр вместо фона",
+     "desc": "Кадр размыт, графика крупно поверх.",
+     "params": {
+      "rule": "блюр вместо фона: кадр исходника размыт и чуть затемнён, графика крупно поверх"
+     }
+    },
+    {
+     "id": "shift",
+     "name": "Затемнение справа + пункты",
+     "desc": "Спикер смещён влево, справа затемнение и список.",
+     "params": {
+      "rule": "затемнение справа: кадр спикера сдвинут влево, правая половина затемнена градиентом, на ней пункты списка появляются по речи"
+     }
+    }
+   ]
+  },
+  "tracking": {
+   "title": "Трекинг",
+   "options": [
+    {
+     "id": "none",
+     "name": "Без трекинга",
+     "desc": "Графика стоит на месте.",
+     "params": {
+      "rule": "без трекинга: графика стоит на месте"
+     }
+    },
+    {
+     "id": "mix",
+     "name": "Смешанно",
+     "desc": "Трекинг там, где спикер показывает предмет или двигается.",
+     "params": {
+      "rule": "трекинг только там, где спикер показывает предмет или заметно двигается, остальное статично"
+     }
+    },
+    {
+     "id": "track",
+     "name": "С трекингом",
+     "desc": "Выноски и плашки следуют за предметом или руками.",
+     "params": {
+      "rule": "трекинг везде, где есть за чем следить: выноски и плашки привязаны к предмету, рукам или лицу"
+     }
+    }
+   ]
+  }
+ },
+ "audience": {
+  "age": {
+   "title": "Возраст",
+   "hint": "можно выбрать несколько",
+   "multi": true,
+   "options": [
+    {
+     "id": "14-17",
+     "name": "14–17",
+     "min": 14,
+     "max": 17
+    },
+    {
+     "id": "18-24",
+     "name": "18–24",
+     "min": 18,
+     "max": 24
+    },
+    {
+     "id": "25-34",
+     "name": "25–34",
+     "min": 25,
+     "max": 34
+    },
+    {
+     "id": "35-44",
+     "name": "35–44",
+     "min": 35,
+     "max": 44
+    },
+    {
+     "id": "45-54",
+     "name": "45–54",
+     "min": 45,
+     "max": 54
+    },
+    {
+     "id": "55+",
+     "name": "55+",
+     "min": 55,
+     "max": 99
+    }
+   ]
+  },
+  "gender": {
+   "title": "Пол",
+   "options": [
+    {
+     "id": "male",
+     "name": "Преимущественно мужская"
+    },
+    {
+     "id": "female",
+     "name": "Преимущественно женская"
+    },
+    {
+     "id": "mixed",
+     "name": "Смешанная"
+    }
+   ]
+  },
+  "level": {
+   "title": "Уровень в теме",
+   "options": [
+    {
+     "id": "beginner",
+     "name": "Новички",
+     "desc": "Простые схемы, минимум терминов, пояснения к цифрам",
+     "params": {
+      "rule": "Не больше одной цифры или мысли на вставку. Простые схемы, термины с пояснением."
+     }
+    },
+    {
+     "id": "middle",
+     "name": "Средний уровень",
+     "desc": "Баланс простоты и деталей",
+     "params": {
+      "rule": "Баланс простоты и деталей: термины можно, сложные цифры с подписью."
+     }
+    },
+    {
+     "id": "pro",
+     "name": "Профи",
+     "desc": "Плотная инфографика, термины без расшифровки",
+     "params": {
+      "rule": "Плотная инфографика, термины без расшифровки."
+     }
+    }
+   ]
+  },
+  "income": {
+   "title": "Доход аудитории",
+   "options": [
+    {
+     "id": "mass",
+     "name": "Масс-маркет",
+     "params": {
+      "rule": ""
+     }
+    },
+    {
+     "id": "middle",
+     "name": "Средний",
+     "params": {
+      "rule": ""
+     }
+    },
+    {
+     "id": "premium",
+     "name": "Премиум",
+     "params": {
+      "rule": "Сдержанность и воздух, без «кричащих» приёмов."
+     }
+    }
+   ]
+  }
+ },
+ "positioning": {
+  "title": "Позиционирование эксперта",
+  "options": [
+   {
+    "id": "strict",
+    "name": "Строгий профессионал",
+    "desc": "Авторитет, факты, сдержанный визуал, без шуток",
+    "preview": null,
+    "params": {
+     "tone": "строгий, фактический, без шуток",
+     "recommend": {
+      "motion": "smooth",
+      "pace": "mid"
+     }
+    }
+   },
+   {
+    "id": "mentor",
+    "name": "Друг-наставник",
+    "desc": "Тепло, простой язык, мягкие цвета, дружелюбные анимации",
+    "preview": null,
+    "params": {
+     "tone": "тёплый, простой язык, на «ты»",
+     "recommend": {
+      "motion": "smooth",
+      "pace": "mid"
+     }
+    }
+   },
+   {
+    "id": "provocateur",
+    "name": "Провокатор",
+    "desc": "Смелые заявления, контраст, резкие акценты, быстрые решения",
+    "preview": null,
+    "params": {
+     "tone": "смелые короткие утверждения, резкие акценты",
+     "recommend": {
+      "motion": "fast",
+      "pace": "fast"
+     }
+    }
+   },
+   {
+    "id": "premium",
+    "name": "Премиум-эксперт",
+    "desc": "Статус, дорогой минимализм, медленные плавные анимации",
+    "preview": null,
+    "params": {
+     "tone": "статусный, сдержанный",
+     "recommend": {
+      "motion": "slow",
+      "pace": "slow"
+     }
+    }
+   },
+   {
+    "id": "researcher",
+    "name": "Практик-исследователь",
+    "desc": "Разборы, тесты, сравнения, много инфографики и цифр",
+    "preview": null,
+    "params": {
+     "tone": "точный, с цифрами и выводами",
+     "recommend": {
+      "motion": "smooth",
+      "pace": "mid"
+     }
+    }
+   },
+   {
+    "id": "entertainer",
+    "name": "Энтертейнер",
+    "desc": "Эмоции, юмор, яркость, мемы и неожиданные вставки",
+    "preview": null,
+    "params": {
+     "tone": "эмоциональный, с юмором и мемами",
+     "recommend": {
+      "motion": "fast",
+      "pace": "fast"
+     }
+    }
+   }
+  ]
+ },
+ "labels": {
+  "note": "Названия как в Premiere Pro, цвета примерные",
+  "targets": [
+   {
+    "id": "labelTakes",
+    "title": "Неудачные дубли и повторы",
+    "default": "Rose"
+   },
+   {
+    "id": "labelPauses",
+    "title": "Паузы и вздохи",
+    "default": "Violet"
+   }
+  ],
+  "colors": [
+   {
+    "id": "Violet",
+    "ru": "Фиолетовый",
+    "hex": "#9c7fe0"
+   },
+   {
+    "id": "Iris",
+    "ru": "Ирис",
+    "hex": "#7e8fe0"
+   },
+   {
+    "id": "Caribbean",
+    "ru": "Бирюзовый",
+    "hex": "#2dc4a6"
+   },
+   {
+    "id": "Lavender",
+    "ru": "Лавандовый",
+    "hex": "#e08fe0"
+   },
+   {
+    "id": "Cerulean",
+    "ru": "Лазурный",
+    "hex": "#2ea3e0"
+   },
+   {
+    "id": "Forest",
+    "ru": "Лесной",
+    "hex": "#5ba33a"
+   },
+   {
+    "id": "Rose",
+    "ru": "Розовый",
+    "hex": "#f07fa6"
+   },
+   {
+    "id": "Mango",
+    "ru": "Манго",
+    "hex": "#f0a33a"
+   },
+   {
+    "id": "Purple",
+    "ru": "Пурпурный",
+    "hex": "#9a4dd6"
+   },
+   {
+    "id": "Blue",
+    "ru": "Синий",
+    "hex": "#3a5ae0"
+   },
+   {
+    "id": "Teal",
+    "ru": "Морской",
+    "hex": "#2e9e9e"
+   },
+   {
+    "id": "Magenta",
+    "ru": "Маджента",
+    "hex": "#e03aa6"
+   },
+   {
+    "id": "Tan",
+    "ru": "Бежевый",
+    "hex": "#c7a07f"
+   },
+   {
+    "id": "Green",
+    "ru": "Зелёный",
+    "hex": "#3aa33a"
+   },
+   {
+    "id": "Brown",
+    "ru": "Коричневый",
+    "hex": "#8f5a3a"
+   },
+   {
+    "id": "Yellow",
+    "ru": "Жёлтый",
+    "hex": "#e0d23a"
+   }
+  ]
+ },
+ "topicHints": [
+  {
+   "keys": [
+    "техн",
+    "гаджет",
+    "смартфон",
+    "ноутбук",
+    "macbook",
+    "iphone",
+    "обзор",
+    "компьют"
+   ],
+   "hint": "цифры и характеристики, сравнения моделей, выноски на предмете в руках, крупные планы деталей"
+  },
+  {
+   "keys": [
+    "дизайн",
+    "интерьер",
+    "брендинг",
+    "иллюстр",
+    "айдентик"
+   ],
+   "hint": "частый показ референсов и примеров работ: сетки картинок, до/после, увеличение деталей, рамки вокруг примеров"
+  },
+  {
+   "keys": [
+    "строй",
+    "ремонт",
+    "дом",
+    "архит",
+    "недвиж"
+   ],
+   "hint": "планировки, схемы конструкций, сметы и цены, этапы работ"
+  },
+  {
+   "keys": [
+    "бьюти",
+    "космет",
+    "кож",
+    "уход",
+    "макияж",
+    "процедур"
+   ],
+   "hint": "до/после, этапы процедуры, составы и активные компоненты, продукты крупно"
+  },
+  {
+   "keys": [
+    "финанс",
+    "деньг",
+    "инвест",
+    "бизнес",
+    "доход"
+   ],
+   "hint": "графики, проценты, суммы, сравнение сценариев, таблицы"
+  },
+  {
+   "keys": [
+    "психол",
+    "отношен",
+    "энерг",
+    "коуч",
+    "саморазв"
+   ],
+   "hint": "схемы и метафоры, ключевые фразы, списки шагов, спокойная подача без перегруза цифрами"
+  },
+  {
+   "keys": [
+    "спорт",
+    "фитнес",
+    "трениров",
+    "питан"
+   ],
+   "hint": "счётчики и таймеры, схемы упражнений, прогресс, цифры результата"
+  },
+  {
+   "keys": [
+    "еда",
+    "рецепт",
+    "кулинар",
+    "кухн"
+   ],
+   "hint": "ингредиенты и граммовки, шаги рецепта, крупные планы"
+  },
+  {
+   "keys": [
+    "монтаж",
+    "видео",
+    "премьер",
+    "съёмк"
+   ],
+   "hint": "показ интерфейса и таймлайна, до/после, горячие клавиши, примеры кадров"
+  }
+ ],
+ "legacyStyles": {
+  "premium": {
+   "name": "Премиальный",
+   "palette": {
+    "light": "#f6f5f2",
+    "light2": "#e2ded5",
+    "dark": "#15151a",
+    "dark2": "#050506",
+    "card": "#ffffff",
+    "inkLight": "#121214",
+    "mutedLight": "#6d6a64",
+    "textDark": "#f5f2ea",
+    "mutedDark": "#a19b8f",
+    "metal": "#c8c1b2",
+    "graphite": "#34322f",
+    "accent": "#c9a35a",
+    "glow": "#f2e2bd",
+    "positive": "#6fbf73",
+    "negative": "#e0644f"
+   },
+   "glow": 0.55,
+   "fonts": {
+    "display": {
+     "family": "Onest",
+     "weight": 800
+    },
+    "body": {
+     "family": "Onest",
+     "weight": 500
+    }
+   },
+   "texture": "none",
+   "modes": {
+    "light": "Светлая студия",
+    "dark": "Свечение",
+    "frame": "На кадре"
+   }
+  },
+  "bright": {
+   "name": "Свежий и яркий",
+   "palette": {
+    "light": "#fff6e5",
+    "light2": "#ffd9a8",
+    "dark": "#2a1360",
+    "dark2": "#120733",
+    "card": "#ffffff",
+    "inkLight": "#15121f",
+    "mutedLight": "#5d5674",
+    "textDark": "#ffffff",
+    "mutedDark": "#cbbdff",
+    "metal": "#ffd23f",
+    "graphite": "#4b3a8f",
+    "accent": "#ff3d7f",
+    "glow": "#ffd23f",
+    "positive": "#22c55e",
+    "negative": "#ff4d4d"
+   },
+   "glow": 0.35,
+   "fonts": {
+    "display": {
+     "family": "Unbounded",
+     "weight": 800
+    },
+    "body": {
+     "family": "Manrope",
+     "weight": 600
+    }
+   },
+   "texture": "none",
+   "modes": {
+    "light": "Плашки",
+    "dark": "Яркий фон",
+    "frame": "На кадре"
+   }
+  },
+  "grunge": {
+   "name": "Мрачный и грубый",
+   "palette": {
+    "light": "#d8d2c4",
+    "light2": "#a9a191",
+    "dark": "#151413",
+    "dark2": "#000000",
+    "card": "#ebe5d6",
+    "inkLight": "#0c0b0a",
+    "mutedLight": "#4a463f",
+    "textDark": "#f1ede3",
+    "mutedDark": "#8f897d",
+    "metal": "#8f897d",
+    "graphite": "#2b2926",
+    "accent": "#d7261e",
+    "glow": "#ffd9b0",
+    "positive": "#7fb069",
+    "negative": "#d7261e"
+   },
+   "glow": 0.2,
+   "fonts": {
+    "display": {
+     "family": "Oswald",
+     "weight": 700
+    },
+    "body": {
+     "family": "IBM Plex Sans",
+     "weight": 500
+    }
+   },
+   "texture": "grain",
+   "modes": {
+    "light": "Бумага",
+    "dark": "Тьма",
+    "frame": "На кадре"
+   }
+  },
+  "minimal": {
+   "name": "Чистый минимализм",
+   "palette": {
+    "light": "#ffffff",
+    "light2": "#eef0f3",
+    "dark": "#f7f8fa",
+    "dark2": "#e8eaee",
+    "card": "#ffffff",
+    "inkLight": "#111318",
+    "mutedLight": "#6b7280",
+    "textDark": "#111318",
+    "mutedDark": "#6b7280",
+    "metal": "#c7ccd4",
+    "graphite": "#d6dae0",
+    "accent": "#2563eb",
+    "glow": "#2563eb",
+    "positive": "#16a34a",
+    "negative": "#dc2626"
+   },
+   "glow": 0,
+   "fonts": {
+    "display": {
+     "family": "Golos Text",
+     "weight": 700
+    },
+    "body": {
+     "family": "Golos Text",
+     "weight": 400
+    }
+   },
+   "texture": "none",
+   "modes": {
+    "light": "Белый",
+    "dark": "Светло-серый",
+    "frame": "На кадре"
+   }
+  }
+ },
+ "commands": {
+  "brand": "/studio:brand",
+  "cut": "/studio:cut",
+  "graphics": "/studio:graphics",
+  "test": "/studio:test-minute",
+  "final": "/studio:final"
+ },
+ "taskFiles": {
+  "brand": "brand",
+  "cut": "cut",
+  "graphics": "graphics",
+  "test": "test-minute",
+  "final": "final"
+ },
+ "folders": {
+  "src": "1. Исходники",
+  "refs": "2. Референсы",
+  "brand": "3. Брендбук",
+  "pr": "4. Premiere Pro",
+  "tech": "5. Служебное",
+  "tasks": "задания",
+  "tpl": "шаблоны",
+  "work": "работа",
+  "stages": {
+   "cut": "1. Нарезка",
+   "graphics": "2. Графика",
+   "test": "3. Тестовая минута",
+   "final": "4. Ролик"
+  },
+  "library": "Библиотека студии",
+  "readme": "ПРОЧТИ МЕНЯ.txt"
+ }
+}
+</script>
+<script>
+(function(){
+  "use strict";
+  var CFG=JSON.parse(document.getElementById("cfg").textContent);
+  var $=function(id){return document.getElementById(id);};
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];});}
+  function clone(o){return JSON.parse(JSON.stringify(o));}
+  var STAGES=CFG.stages,G=CFG.groups,AUD=CFG.audience,POS=CFG.positioning;
+  function stage(id){return STAGES.filter(function(s){return s.id===id;})[0];}
+  function opt(group,id){return ((G[group]||{}).options||[]).filter(function(o){return o.id===id;})[0]||null;}
+  function ans(c,group){return group==="format"?fmtKey(c.format):(c.answers||{})[group];}
+  function label(c,group){var o=opt(group,ans(c,group));return o?o.name:"—";}
+  function labelColor(id){return (CFG.labels.colors||[]).filter(function(x){return x.id===id;})[0]||{id:id,ru:id,hex:"#888"};}
+  function topicHint(c){var t=String((c.topic||"")+" "+(c.note||"")).toLowerCase();var h=(CFG.topicHints||[]).filter(function(x){return x.keys.some(function(k){return t.indexOf(k)>=0;});});return h.map(function(x){return x.hint;});}
+  function lc1(s){s=String(s||"");return s.charAt(0).toLowerCase()+s.slice(1);}
+
+  // ===== Хранилище =====
+  var KEY="studio.v3";
+  var DB=(function(){try{var d=JSON.parse(localStorage.getItem(KEY)||"null");if(d&&d.clients)return d;}catch(e){}return {clients:{},seeded:false};})();
+  var storageOk=true;
+  DB.settings=Object.assign({libraryPath:""},DB.settings||{});
+  var F=CFG.folders;
+  DB.settings=Object.assign({libraryMode:"",libraryPath:"",rootName:""},DB.settings);
+  function lib(){var m=DB.settings.libraryMode,p=String(DB.settings.libraryPath||"").trim().replace(/\/+$/,"");
+    if(m==="custom"&&p)return {root:p,music:p+"/music/",sfx:p+"/sfx/",tpl:p+"/templates/",cat:p+"/catalog.csv",shared:true,label:p};
+    if(m==="root"){var r="../"+F.library;return {root:r,music:r+"/music/",sfx:r+"/sfx/",tpl:r+"/templates/",cat:r+"/catalog.csv",shared:true,label:"«"+F.library+"» в главной папке"};}
+    return {none:true,root:"",music:"",sfx:"",tpl:"",cat:"",label:"не подключена"};}
+  function persist(){try{localStorage.setItem(KEY,JSON.stringify(DB));storageOk=true;}catch(e){storageOk=false;}}
+  function uid(){return "c"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);}
+  function newCard(){var t=new Date().toISOString();return norm({id:uid(),name:"",topic:"",note:"",createdAt:t,updatedAt:t});}
+  function norm(c){
+    if(!c)return c;
+    if(c.note==null)c.note=c.brief||"";delete c.brief;
+    if(c.format==="both")c.format="auto";if(c.format==null)c.format="";
+    c.audience=Object.assign({age:[],gender:"",level:"",income:""},c.audience||{});if(!Array.isArray(c.audience.age))c.audience.age=[];
+    ["positioning","avatar","logo","finalNote"].forEach(function(k){if(c[k]==null)c[k]="";});
+    c.answers=c.answers||{};delete c.answers.task;
+    var LS=CFG.legacyStyles||{},st0=c.answers.style;
+    if(st0&&LS[st0]){if(!c.brandOverride){var lb=clone(LS[st0]);c.brandOverride={name:lb.name,palette:lb.palette,glow:lb.glow,fonts:lb.fonts,texture:lb.texture,modes:lb.modes};}c.answers.style=c.answers.brandbook==="files"?"exact":"refs";}
+    if(!c.answers.style&&c.answers.brandbook)c.answers.style=c.answers.brandbook==="files"?"exact":"refs";
+    delete c.answers.brandbook;var dflt={cutMode:"cut",cutPauses:"natural",cutTakes:"last",labelTakes:"Rose",labelPauses:"Violet",tracking:"mix"};Object.keys(dflt).forEach(function(k){if(!c.answers[k])c.answers[k]=dflt[k];});if(!Array.isArray(c.answers.gLayouts))c.answers.gLayouts=G.gLayouts.options.map(function(o){return o.id;});if(!Array.isArray(c.brandLog))c.brandLog=[];
+    c.likes=c.likes||{};c.notes=c.notes||{};c.done=c.done||{};c.out=c.out||{};
+    if(!c.refs||typeof c.refs!=="object")c.refs={};
+    if(c.output&&c.output.manifest&&!c.out.graphics)c.out.graphics={found:true,at:c.output.loadedAt||"",manifest:c.output.manifest};
+    delete c.output;
+    c.approved=!!c.approved;
+    return c;
+  }
+  function saveCard(c){if(!c.name)return;c.updatedAt=new Date().toISOString();DB.clients[c.id]=c;persist();}
+  DB.deleted=DB.deleted||{};
+  Object.keys(DB.clients).forEach(function(k){norm(DB.clients[k]);});
+
+  // ===== Формат, аудитория, позиционирование =====
+  function fmtKey(f){return f==="both"?"auto":(f||"");}
+  function fmtName(f){f=fmtKey(f);return f==="v"?"вертикальный":f==="auto"?"по размеру кадра":f==="h"?"горизонтальный":"формат не выбран";}
+  function resLine(f){f=fmtKey(f);return f==="v"?"вертикальный, разрешение по исходнику (обычно 1080x1920)":f==="auto"?"ориентация и разрешение по кадру исходника":"горизонтальный, разрешение по исходнику (обычно 1920x1080)";}
+  function safeRule(f){var o=opt("format",fmtKey(f)||"h");return o?o.params.safe:"";}
+  function audOpt(group,id){return (AUD[group].options||[]).filter(function(o){return o.id===id;})[0]||null;}
+  function posOpt(id){return POS.options.filter(function(o){return o.id===id;})[0]||null;}
+  function ages(c){var sel=(c.audience&&c.audience.age)||[];return AUD.age.options.filter(function(o){return sel.indexOf(o.id)>=0;});}
+  function audienceDone(c){var a=c.audience||{};return !!(ages(c).length&&a.gender&&a.level&&a.income&&c.positioning);}
+  function audienceRules(c){
+    var r=[],ag=ages(c),a=c.audience||{};
+    var has45=ag.some(function(o){return o.min>=45;}),young=ag.length&&ag.every(function(o){return o.max<=24;});
+    if(has45)r.push("Возраст 45+: текст во вставках крупнее на 20%, темп не быстрее среднего, анимации не быстрые.");
+    if(young)r.push("Аудитория 14–24: допускается быстрый темп, разговорный тон и мемность.");
+    if(ag.length>1)r.push("Смешанные возрасты: читаемость по самой старшей группе ("+ag[ag.length-1].name+"), динамика по самой младшей ("+ag[0].name+").");
+    var lv=audOpt("level",a.level);if(lv&&lv.params.rule)r.push(lv.name+": "+lc1(lv.params.rule));
+    var inc=audOpt("income",a.income);if(inc&&inc.params.rule)r.push("Премиум-доход: "+lc1(inc.params.rule));
+    var p=posOpt(c.positioning);if(p)r.push("Тон надписей: "+p.params.tone+".");
+    return r;
+  }
+  function audienceText(c){
+    var a=c.audience||{},p=posOpt(c.positioning),g=audOpt("gender",a.gender),lv=audOpt("level",a.level),inc=audOpt("income",a.income);
+    var lines=["Возраст: "+(ages(c).map(function(o){return o.name;}).join(", ")||"—"),"Пол: "+(g?g.name.toLowerCase():"—"),"Уровень в теме: "+(lv?lv.name.toLowerCase():"—"),"Доход: "+(inc?inc.name.toLowerCase():"—"),
+      "Позиционирование эксперта: "+(p?p.name+" — "+p.desc.toLowerCase():"—")];
+    var r=audienceRules(c);if(r.length)lines.push("Правила из аудитории и позиционирования:\n"+r.map(function(x){return "- "+x;}).join("\n"));
+    return lines.join("\n");
+  }
+  function recommend(c){
+    var p=posOpt(c.positioning),r=p?clone(p.params.recommend):{};
+    var has45=ages(c).some(function(o){return o.min>=45;});
+    if(has45){if(r.motion==="fast")r.motion="smooth";if(r.pace==="fast")r.pace="mid";}
+    if(c.audience&&c.audience.income==="premium"&&(r.style==="bright"||r.style==="grunge"))r.style="premium";
+    return r;
+  }
+
+  // ===== Стиль брендбука =====
+  var NEUTRAL_BRAND={name:"Из брендбука клиента",palette:{light:"#f4f4f5",light2:"#dedee1",dark:"#1c1c1f",dark2:"#0b0b0c",card:"#ffffff",inkLight:"#111113",mutedLight:"#6b6b72",textDark:"#f4f4f5",mutedDark:"#9a9aa1",metal:"#b9b9bf",graphite:"#3a3a40",accent:"#8a8a92",glow:"#e4e4e8",positive:"#4caf50",negative:"#e05a4f"},glow:.3,
+    fonts:{display:{family:"Onest",weight:700},body:{family:"Onest",weight:500}},texture:"none",modes:{light:"Светлый",dark:"Тёмный",frame:"На кадре"}};
+  var PAL_KEYS=["light","light2","dark","dark2","card","inkLight","mutedLight","textDark","mutedDark","metal","graphite","accent","glow","positive","negative"];
+  var PAL_NAMES={light:"Светлый фон",light2:"Светлый 2",dark:"Тёмный фон",dark2:"Тёмный 2",card:"Карточки",inkLight:"Текст на светлом",mutedLight:"Подписи на светлом",textDark:"Текст на тёмном",mutedDark:"Подписи на тёмном",metal:"Металл",graphite:"Графит",accent:"Акцент",glow:"Свечение",positive:"Плюс",negative:"Минус"};
+  function buildBrand(c){
+    var a=c.answers||{};
+    var b=clone(NEUTRAL_BRAND);if(a.style!=="exact")b.name="Стиль клиента";
+    var mo=opt("motion",a.motion||"smooth");b.motion=clone(mo.params.motion);
+    var o=c.brandOverride;
+    if(o){["name","glow","texture"].forEach(function(k){if(o[k]!=null)b[k]=o[k];});
+      if(o.palette)b.palette=Object.assign({},b.palette,o.palette);
+      if(o.fonts){b.fonts=clone(b.fonts);["display","body"].forEach(function(k){if(o.fonts[k])b.fonts[k]=Object.assign({},b.fonts[k],o.fonts[k]);});}
+      if(o.modes)b.modes=Object.assign({},b.modes,o.modes);
+      if(o.motion)b.motion=Object.assign({},b.motion,o.motion);
+      if(o.rules)b.rules=o.rules.slice(0,8);}
+    return b;
+  }
+  function brandJSON(c){var b=buildBrand(c);return {schema:"brandbook/1",name:b.name,palette:b.palette,glow:b.glow,fonts:b.fonts,texture:b.texture,modes:b.modes,motion:b.motion,rules:b.rules||[]};}
+  function hexRgb(h){h=String(h).replace("#","");if(h.length===3)h=h.split("").map(function(x){return x+x;}).join("");var n=parseInt(h,16);return [n>>16&255,n>>8&255,n&255];}
+  function lum(h){var c=hexRgb(h).map(function(v){v/=255;return v<=.03928?v/12.92:Math.pow((v+.055)/1.055,2.4);});return .2126*c[0]+.7152*c[1]+.0722*c[2];}
+  var loadedFonts={};
+  function loadFont(f){
+    if(!f||!f.family||loadedFonts[f.family])return;loadedFonts[f.family]=1;
+    var fm=encodeURIComponent(f.family).replace(/%20/g,"+");
+    var l=document.createElement("link");l.rel="stylesheet";l.href="https://fonts.googleapis.com/css2?family="+fm+":wght@400;500;600;700;800&display=swap";
+    l.onerror=function(){var l2=document.createElement("link");l2.rel="stylesheet";l2.href="https://fonts.googleapis.com/css2?family="+fm+"&display=swap";document.head.appendChild(l2);};
+    document.head.appendChild(l);
+  }
+  function fam(f){return String(f||"").replace(/['"<>;{}]/g,"");}
+  function brandVars(b){
+    var p=b.palette,g=hexRgb(p.glow),ga=Math.max(0,Math.min(1,+b.glow||0));
+    var v={"--b-light":p.light,"--b-light2":p.light2,"--b-dark":p.dark,"--b-dark2":p.dark2,"--b-card":p.card,"--b-ink-l":p.inkLight,"--b-muted-l":p.mutedLight,
+      "--b-text-d":p.textDark,"--b-muted-d":p.mutedDark,"--b-metal":p.metal,"--b-graph":p.graphite,"--b-acc":p.accent,"--b-glow":p.glow,"--b-pos":p.positive,"--b-neg":p.negative,
+      "--b-glow-sh":"rgba("+g.join(",")+","+ga+")","--b-on-acc":lum(p.accent)>.35?"#0a0b0d":"#ffffff",
+      "--b-font-d":"'"+fam(b.fonts.display.family)+"'","--b-font-b":"'"+fam(b.fonts.body.family)+"'","--b-w-d":+b.fonts.display.weight||700,"--b-w-b":+b.fonts.body.weight||400};
+    loadFont(b.fonts.display);loadFont(b.fonts.body);
+    return Object.keys(v).map(function(k){return k+":"+String(v[k]).replace(/[;{}<>"]/g,"");}).join(";");
+  }
+  var SCHEMA_TEXT=[
+    "{",
+    '  "schema": "brandbook/1",',
+    '  "name": "название стиля",',
+    '  "palette": { '+PAL_KEYS.map(function(k){return '"'+k+'": "#RRGGBB"';}).join(", ")+" },",
+    '  "glow": 0.0–1.0,',
+    '  "fonts": { "display": { "family": "шрифт из Google Fonts с кириллицей", "weight": 800 }, "body": { "family": "...", "weight": 500 } },',
+    '  "texture": "none" | "grain",',
+    '  "modes": { "light": "название светлого режима", "dark": "название тёмного режима", "frame": "название режима поверх кадра" },',
+    '  "motion": { "label": "...", "inFrames": число, "outFrames": число, "ease": "cubic-bezier(...)", "cycle": секунды 3–12 },',
+    '  "rules": ["до 8 коротких правил графики"]',
+    "}"
+  ].join("\n");
+  function parseClaude(text){
+    var t=typeof text==="object"&&text?JSON.stringify(text):String(text||"").trim();
+    if(!t)return {err:["Поле пустое. Вставьте ответ Claude целиком."]};
+    t=t.replace(/^```[a-z]*\s*/i,"").replace(/```\s*$/,"");
+    var i=t.indexOf("{"),j=t.lastIndexOf("}");
+    if(i<0||j<i)return {err:["В ответе нет JSON-объекта. Попросите Claude вернуть только JSON."]};
+    var o;try{o=JSON.parse(t.slice(i,j+1));}catch(e){return {err:["JSON сломан: "+e.message+". Скопируйте ответ Claude целиком, без обрезки."]};}
+    if(o&&o.brand&&typeof o.brand==="object")o=o.brand;
+    var er=[],hex=/^#([0-9a-f]{3}|[0-9a-f]{6})$/i,known=0;
+    if(!o||typeof o!=="object"||Array.isArray(o))return {err:["Ответ должен быть объектом { … }."]};
+    if(o.palette!=null){if(typeof o.palette!=="object")er.push("palette: объект с цветами.");else{known++;Object.keys(o.palette).forEach(function(k){if(PAL_KEYS.indexOf(k)<0)delete o.palette[k];else if(!hex.test(String(o.palette[k])))er.push("palette."+k+": нужен цвет вида #RRGGBB, сейчас «"+o.palette[k]+"».");});}}
+    if(o.fonts!=null){if(typeof o.fonts!=="object")er.push("fonts: объект со шрифтами.");else{known++;["display","body"].forEach(function(k){var f=o.fonts[k];if(f!=null&&(!f.family||typeof f.family!=="string"))er.push("fonts."+k+".family: название шрифта.");});}}
+    if(o.glow!=null){known++;if(!(typeof o.glow==="number"&&o.glow>=0&&o.glow<=1))er.push("glow: число от 0 до 1.");}
+    if(o.texture!=null){known++;if(["none","grain"].indexOf(o.texture)<0)er.push("texture: только \"none\" или \"grain\".");}
+    if(o.motion!=null){known++;if(o.motion.cycle!=null&&!(o.motion.cycle>=3&&o.motion.cycle<=12))er.push("motion.cycle: секунды от 3 до 12.");}
+    if(o.rules!=null){known++;if(!Array.isArray(o.rules))er.push("rules: список строк.");}
+    if(o.name!=null||o.modes!=null)known++;
+    if(!known&&!er.length)er.push("В ответе нет полей брендбука: palette, fonts, texture, glow, motion, rules.");
+    return er.length?{err:er}:{ok:o};
+  }
+  function mergeOverride(base,o){
+    var b=base?clone(base):{};
+    ["name","glow","texture","note"].forEach(function(k){if(o[k]!=null)b[k]=o[k];});
+    ["palette","modes","motion"].forEach(function(k){if(o[k])b[k]=Object.assign({},b[k]||{},o[k]);});
+    if(o.fonts){b.fonts=b.fonts||{};["display","body"].forEach(function(k){if(o.fonts[k])b.fonts[k]=Object.assign({},b.fonts[k]||{},o.fonts[k]);});}
+    if(o.rules)b.rules=o.rules.slice(0,8);
+    delete b.note;return b;
+  }
+
+  // ===== Этапы: автоотметка =====
+  function brolls(c){return (c.out&&c.out.graphics&&c.out.graphics.manifest&&c.out.graphics.manifest.brolls)||[];}
+  function autoDone(c,id){
+    if(id==="info")return !!(c.name&&c.topic&&fmtKey(c.format)&&audienceDone(c));
+    if(id==="brand")return !!(c.approved&&(c.answers||{}).style);
+    var o=c.out[id];return !!(o&&o.found);
+  }
+  function isDone(c,id){return autoDone(c,id)||!!c.done[id];}
+  function doneCount(c){return STAGES.filter(function(s){return isDone(c,s.id);}).length;}
+  function nextStage(c){var s=STAGES.filter(function(s){return !isDone(c,s.id);})[0];return s?s.id:STAGES[STAGES.length-1].id;}
+
+  // ===== Промты =====
+  var FIRST_REFS="Перед началом проверь прикреплённые референсы. Если их нет — остановись и запроси.";
+  var FIRST_SRC="Перед началом проверь, что исходник лежит в source/. Если его нет — остановись и запроси.";
+  var FIRST_SRC_SOFT="Перед началом проверь source/. Если исходника нет, сделай вставки на нейтральном кадре и напиши об этом в отчёте.";
+  function FOLDERtxt(){var L=lib();return ["Работай в папке клиента (её создал сайт студии). Структура:",
+    F.src+"/ — исходники",F.refs+"/ — референсы",F.brand+"/ — брендбук клиента, лого, итоговый brandbook.json",
+    F.pr+"/ — всё для Premiere Pro по этапам: "+[F.stages.cut,F.stages.graphics,F.stages.test,F.stages.final].join(", ")+". Внутри этапа — папки версий v01, v02…",
+    F.tech+"/ — служебное: задания сайта (только читать), шаблоны графики, рабочие файлы",
+    L.none?"Библиотека музыки и SFX не подключена: спроси у пользователя, где лежат музыка и звуки.":"Музыка: "+L.music+", звуки: "+L.sfx+" — общая библиотека студии, бери только оттуда. Каталог с описаниями: "+L.cat+" (если есть — выбирай по нему)."]
+    .concat(L.tpl?["Шаблоны графики студии: "+L.tpl+" (список — index.json)."]:[]).join("\n");}
+  var TRACKS="проект Premiere Pro в формате XML (FCP7 XML) с раздельными дорожками: V1 нарезка исходника, V2 бироллы и графика, V3 титры и субтитры, A1 голос, A2 музыка, A3 SFX. Каждый элемент — отдельный клип, всё правится вручную: громкость, позиция, тайминг.";
+  function clientBlock(c){return ["## Клиент","Имя: "+c.name,"Тематика канала: "+(c.topic||"—"),"Формат: "+resLine(c.format)+", 25 fps.","Отступы и безопасные зоны: "+safeRule(c.format)+"."].concat(c.note?["Комментарий монтажёра: "+c.note]:[]).join("\n");}
+  function brandBlock(c,full){
+    var b=buildBrand(c),st=(c.answers||{}).style;
+    var l=["## Брендбук (этап 2)",
+      "Стиль — studio/brandbook.json: его записывает сайт после утверждения. Цвета, шрифты и анимации бери только оттуда, новый стиль не придумывай."+(st==="exact"?" Это перенос брендбука клиента из brand/: при сомнениях сверяйся с оригиналом.":""),
+      (c.logo?"Логотип клиента: brand/logo.png.":"Логотипа нет, не придумывай его."),
+      "Анимации: "+label(c,"motion")+" — вход "+b.motion.inFrames+" кадров, выход "+b.motion.outFrames+", кривая "+b.motion.ease+"."+(c.approved?"":" Внимание: брендбук ещё не утверждён клиентом.")];
+    if(full)l=l.concat(["Если studio/brandbook.json нет (задание скопировано вручную), вот он же:","```json",JSON.stringify(brandJSON(c),null,2),"```"]);
+    return l.join("\n");
+  }
+  function feedbackBlock(c){
+    var fb=brolls(c).filter(function(s){return c.likes[s.id]||c.notes[s.id];});
+    if(!fb.length)return "";
+    return "Отзыв по графике прошлого прогона:\n"+fb.map(function(s){return "- "+s.id+" «"+s.name+"»"+(c.likes[s.id]?" — утверждено":"")+(c.notes[s.id]?" — правка: "+c.notes[s.id]:"");}).join("\n");
+  }
+  function settingsText(c){
+    var p=opt("pace",ans(c,"pace"));
+    return ["- Частота вставок: "+label(c,"pace")+(p?" — каждые "+p.params.density.minSec+"–"+p.params.density.maxSec+" с":""),
+      "- Музыка: "+label(c,"music")+(lib().none?"":" (только из "+lib().music+")"),
+      "- SFX: "+label(c,"sfx")+(lib().none?"":" (только из "+lib().sfx+")"),
+      "- Субтитры: "+label(c,"subs")].join("\n");
+  }
+  var MANIFEST_EXAMPLE=JSON.stringify({schema:"broll-manifest/1",generatedAt:"ISO-дата",source:{file:"source/имя.mp4",width:1920,height:1080,fps:25},
+    brolls:[{id:"br01",name:"Короткое название",layout:"broll | side | bottom | panel | blur | shift",tracking:false,template:"templates/<тип>",start:"00:00:12:05",end:"00:00:15:10",text:"текст на экране",speech:"фраза спикера в этот момент",preview:"previews/br01.mp4",poster:"previews/br01.jpg",file:"prores/br01.mov",note:"почему здесь эта вставка"}]},null,2);
+  function cutThreshold(c){var pa=opt("cutPauses",ans(c,"cutPauses"));return pa?String(pa.params.maxPause).replace(".",","):"0,6";}
+  function prompt(c,id){
+    var p=[];
+    if(id==="cut"){
+      var tk=opt("cutTakes",ans(c,"cutTakes")),mark=ans(c,"cutMode")==="mark";
+      var lt=labelColor(c.answers.labelTakes),lp=labelColor(c.answers.labelPauses);
+      var take=(tk?tk.params.rule:"если фраза повторяется, оставь последний вариант, сказанный целиком без оговорок");
+      p=[FIRST_SRC,"","# "+(mark?"Пометка пауз и дублей в исходнике":"Нарезка исходника"),"",clientBlock(c),"","## Папки",FOLDERtxt(),"",
+        "## Что сделать",
+        "1. Транскрибируй исходник через Whisper с таймкодами слов.",
+        "2. Найди паузы длиннее "+cutThreshold(c)+" с, вздохи, оговорки, «э-э», кашель и фальстарты.",
+        "3. Найди неудачные дубли и повторы. Правило выбора удачного дубля: "+take+"."];
+      if(mark)p=p.concat([
+        "4. Ничего не удаляй. Разрежь исходник на клипы по границам найденных мест на V1 и A1, порядок и длительность ролика не меняются.",
+        "5. Покрась клипы лейблами Premiere Pro: неудачные дубли и повторы — "+lt.id+" ("+lt.ru.toLowerCase()+"), паузы и вздохи — "+lp.id+" ("+lp.ru.toLowerCase()+"). Удачные куски без лейбла. В FCP7 XML лейбл задаётся в clipitem так: <labels><label2>"+lt.id+"</label2></labels>.",
+        "6. Поставь маркеры последовательности на начало каждого помеченного куска с комментарием: «дубль», «повтор», «пауза» или «вздох»."]);
+      else p=p.concat(["4. Вырежи найденное. Оставляй 0,1 с воздуха до и после фразы. Порядок мыслей не меняй."]);
+      p=p.concat(["","## Результат и куда сохранить",
+        "output/cut/cut.xml — "+(mark?"исходник, разрезанный и помеченный лейблами":"нарезка")+" в FCP7 XML для Premiere Pro: V1 исходник, A1 голос, каждый фрагмент отдельным клипом со ссылкой на исходник, без перекодирования.",
+        "output/cut/transcript.json — транскрипт "+(mark?"с таймкодами исходника и отметками, какие куски помечены":"нарезки с новыми таймкодами слов")+". Он нужен следующим этапам.",
+        "output/cut/report.md — список найденного: таймкод, длительность, тип, причина.",
+        "output/cut/preview.mp4 — превью "+(mark?"исходника с подписями помеченных мест":"нарезки")+": H.264, 1280 px по длинной стороне."]);
+      if(mark)p.push("","Следующие этапы работают с удачными кусками: в transcript.json отметь их полем keep: true.");
+    }else if(id==="graphics"){
+      var fb=feedbackBlock(c),lays=(c.answers.gLayouts||[]).map(function(x){return opt("gLayouts",x);}).filter(Boolean),tr=opt("tracking",ans(c,"tracking")),th=topicHint(c);
+      p=[FIRST_SRC_SOFT,"","# Графика: тестовые вставки по брендбуку","",clientBlock(c),"","## Аудитория и позиционирование",audienceText(c),"",brandBlock(c,true),"","## Папки",FOLDERtxt(),"",
+        "## Что сделать",
+        "Сделай 6–10 тестовых вставок строго по брендбуку выше. Новый стиль не придумывай.",
+        "Текст ролика бери из output/cut/transcript.json"+(ans(c,"cutMode")==="mark"?" (только куски с keep: true)":"")+". Если файла нет, транскрибируй исходник сам через Whisper.",
+        "Выбирай моменты, где графика помогает понять мысль. Тексты на экране — из реальной речи, коротко.",
+        "","Раскладки: используй каждую хотя бы один раз.",lays.map(function(o){return "- "+o.params.rule;}).join("\n")||"- на твой выбор",
+        "Вставки, которые меняют кадр спикера (блюр, смещение, окно на фоне бренда), рендери полным кадром с уже обработанным спикером. Остальные — с альфа-каналом поверх кадра.",
+        "","Трекинг: "+(tr?tr.params.rule:"на твой выбор")+". Для трекинга используй OpenCV или аналог, точку отслеживания укажи в отчёте.",
+        "","Адаптация под тематику канала «"+(c.topic||"—")+"» и контекст ролика: "+(th.length?th.join("; "):"подбери типы графики под тему сам: что зрителю чаще всего нужно увидеть, чтобы понять мысль")+". Если в речи упоминаются примеры, работы или предметы — показывай их, а не абстрактные иконки."].concat(fb?["",fb,"Утверждённые вставки оставь как есть, правки внеси, остальные замени новыми."]:[]).concat(["",
+        "## Шаблоны",
+        (lib().tpl?"Сначала посмотри библиотеку шаблонов студии "+lib().tpl+"index.json. Подходящие шаблоны переиспользуй, подставив цвета и шрифты из брендбука. Новые делай, только если подходящих нет.":"Библиотеки шаблонов студии нет: делай шаблоны с нуля."),
+        "Каждый тип вставки сделай переиспользуемым шаблоном с параметрами (текст, цифры, позиция, длительность), цвета и шрифты — только из брендбука. Исходники шаблонов сохрани в output/graphics/templates/<тип>/ с README: как запустить и какие параметры. Тестовая минута и целый ролик делают новые вставки только по этим шаблонам.",
+        "","## Результат и куда сохранить",
+        "output/graphics/manifest.json — список вставок по схеме ниже. Пути внутри указывай относительно output/graphics/.",
+        "output/graphics/previews/<id>.mp4 — превью: H.264, 1280 px по длинной стороне, 25 fps, вставка на своём кадре исходника, 0,5 с до и после, без звука, до 3 МБ.",
+        "output/graphics/previews/<id>.jpg — обложка из середины вставки.",
+        "output/graphics/prores/<id>.mov — рабочие файлы ProRes 4444 в разрешении исходника.",
+        "","manifest.json:","```json",MANIFEST_EXAMPLE,"```"]);
+    }else if(id==="test"){
+      var ok=brolls(c).filter(function(s){return c.likes[s.id];}).map(function(s){return s.id+" «"+s.name+"»";});
+      p=[FIRST_SRC,"","# Тестовая минута ролика","",clientBlock(c),"","## Аудитория и позиционирование",audienceText(c),"",brandBlock(c,false),"",
+        "## Настройки монтажа",settingsText(c),"","## Папки",FOLDERtxt(),"",
+        "## Из чего собирать",
+        "Нарезка (этап 3): output/cut/cut.xml и output/cut/transcript.json"+(ans(c,"cutMode")==="mark"?". Нарезка помечена лейблами: в монтаж бери только куски с keep: true":"")+". Если их нет — остановись и попроси сначала сделать нарезку.",
+        "Графика (этап 4): утверждённые вставки — "+(ok.length?ok.join(", "):"не отмечены, бери лучшие из manifest.json")+". Если они попадают в первую минуту, бери готовые файлы из output/graphics/prores/. Новые вставки делай только по шаблонам из output/graphics/templates/: стиль и раскладки не придумывай заново.",
+        "","## Что сделать",
+        "Смонтируй первую минуту нарезки: вставки по частоте из настроек, музыка, SFX, субтитры.",
+        "Музыку и SFX бери только из библиотеки студии. Голос всегда громче музыки, музыку приглушай под речь.",
+        "","## Результат и куда сохранить",
+        "output/test-minute/project.xml — "+TRACKS,
+        "output/test-minute/settings.json — принятые решения для целого ролика: трек музыки и громкость в dB, какие SFX на какие типы вставок, стиль субтитров, средняя частота вставок, использованные шаблоны.",
+        "output/test-minute/graphics/ — новые вставки ProRes 4444, на них ссылается проект.",
+        "output/test-minute/preview.mp4 — превью-рендер: H.264, 1280 px по длинной стороне.",
+        "output/test-minute/report.md — что и где вставлено: таймкод, вставка, текст, музыка, звук."];
+      if(fmtKey(c.format)==="auto")p.push("","Ориентацию определи по исходнику (ширина больше высоты — горизонтальный) и примени соответствующие отступы и безопасные зоны.");
+    }else if(id==="final"){
+      p=[FIRST_SRC,"","# Монтаж ролика целиком","",clientBlock(c),"","## Папки",FOLDERtxt(),"",
+        "## Эталон — тестовая минута (этап 5)",
+        "Возьми output/test-minute/project.xml и output/test-minute/settings.json. Повтори те же решения на всём ролике: стиль и громкость музыки, SFX, стиль субтитров, частоту и типы вставок.",
+        "Первую минуту перенеси из тестовой как есть"+(c.finalNote?", с правками ниже":"")+". Если тестовой минуты нет — остановись и попроси сначала её сделать.",
+        "Стиль — studio/brandbook.json, новые вставки — только по шаблонам из output/graphics/templates/. Нарезка — output/cut/cut.xml.",
+        "Аудитория и позиционирование те же, что в тестовой минуте."].concat(c.finalNote?["","## Правки после тестовой минуты",c.finalNote]:[]).concat(["",
+        "## Результат и куда сохранить",
+        "output/final/project.xml — "+TRACKS,
+        "output/final/graphics/ — все вставки ProRes 4444, на них ссылается проект.",
+        "output/final/preview.mp4 — превью-рендер: H.264, 1280 px по длинной стороне.",
+        "output/final/report.md — что и где вставлено: таймкод, вставка, текст, музыка, звук."]);
+    }
+    return p.join("\n");
+  }
+  function brandTaskPrompt(c){
+    var ex=(c.answers||{}).style==="exact";
+    return [ex?"Перед началом проверь, что в brand/ лежит брендбук клиента (PDF, картинки, шрифты). Если его нет — остановись и запроси.":FIRST_REFS.replace("прикреплённые референсы","референсы в brand/ (картинки, скриншоты, ссылки в текстовом файле)"),"",
+      "# Брендбук: "+(ex?"перенос брендбука клиента в схему студии":"сборка стиля по референсам"),"",clientBlock(c),"","## Аудитория и позиционирование",audienceText(c),"","## Папки",FOLDERtxt(),"",
+      "## Что сделать",
+      ex?"Перенеси брендбук клиента без изменений: цвета (точные HEX), шрифты (если шрифта нет в Google Fonts, подбери ближайший с кириллицей и напиши об этом), правила отступов и лого.":
+        "Разбери референсы: палитра, типографика, фоны, текстуры, характер движения. Собери стиль под тематику и аудиторию клиента. Контраст текста к фону не ниже 4.5:1. Шрифты только из Google Fonts с кириллицей.",
+      ex?"":"Сделай основной вариант и, если есть сомнения, ещё 1–2 альтернативы.",
+      "","## Результат и куда сохранить",
+      "output/brand/brandbook.json — основной стиль строго по схеме ниже, плюс поле \"note\": одно предложение, что получилось.",
+      ex?"output/brand/report.md — что перенесено, что пришлось заменить и почему.":"output/brand/variants/<имя>.json — альтернативы по той же схеме. output/brand/report.md — разбор референсов и чем варианты отличаются.",
+      "Сайт подтянет output/brand/brandbook.json после «Обновить».","","Схема:","```json",SCHEMA_TEXT,"```"].filter(function(x){return x!=="";}).join("\n").replace(/\n## /g,"\n\n## ");
+  }
+  var STAGE_DIR={cut:"output/cut/",graphics:"output/graphics/",test:"output/test-minute/",final:"output/final/"};
+  function prDir(id){return F.pr+"/"+F.stages[id]+"/";}
+  function mapPaths(t,id){
+    var V=function(sid){return sid===id?"<новая версия>/":"<последняя версия>/";};
+    t=t.replace(/output\/graphics\/templates\//g,F.tech+"/"+F.tpl+"/");
+    Object.keys(STAGE_DIR).forEach(function(sid){t=t.split(STAGE_DIR[sid]).join(prDir(sid)+V(sid));});
+    t=t.replace(/output\/brand\/variants\//g,F.brand+"/варианты/").replace(/output\/brand\//g,F.brand+"/");
+    t=t.replace(/studio\/brandbook\.json/g,F.tech+"/brandbook.json").replace(/brand\/logo\.png/g,F.brand+"/logo.png");
+    t=t.replace(/референсы в brand\//g,"референсы в "+F.refs+"/").replace(/(в|из) brand\//g,"$1 "+F.brand+"/");
+    t=t.replace(/(^|[\s«("'])source\//gm,"$1"+F.src+"/");
+    t=t.replace(/<последняя версия>\/\./g,"<последняя версия>/.").replace(/<новая версия>\/\./g,"<новая версия>/.");
+    return t;
+  }
+  function versionNote(id){return STAGE_DIR[id]?"\n\n## Версии\n<новая версия> — новая папка внутри «"+prDir(id).slice(0,-1)+"»: v01, v02 и так далее, следующий свободный номер. Прошлые версии не трогай: в них могут быть правки монтажёра. <последняя версия> — папка с самым большим номером у соответствующего этапа.":"";}
+  function taskText(c,id){return mapPaths(id==="brand"?brandTaskPrompt(c):prompt(c,id),id)+versionNote(id);}
+  function refinePrompt(c,edits){
+    var notes=brolls(c).filter(function(s){return c.notes[s.id];}).map(function(s){return "- "+s.name+": "+c.notes[s.id];});
+    return [edits?"":FIRST_REFS,edits?"":"",
+      edits?"Внеси правки в стиль брендбука клиента видеостудии.":"Доработай стиль брендбука для клиента видеостудии по прикреплённым референсам.","",
+      clientBlock(c),"","Аудитория и позиционирование:",audienceText(c),"",
+      "Источник стиля: "+lc1(label(c,"style"))+". Анимации: "+label(c,"motion")+".","",
+      (edits?"Правки монтажёра:\n"+edits+"\n":""),
+      (notes.length?"Правки монтажёра по графике:\n"+notes.join("\n")+"\n":""),
+      "Текущий стиль:",JSON.stringify(brandJSON(c),null,2),"",
+      "Контраст текста к фону не ниже 4.5:1. Шрифты только из Google Fonts с кириллицей.",
+      edits?"Верни строго один JSON-объект только с изменёнными полями по схеме ниже и полем \"note\" — одно короткое предложение по-русски, что изменено. Без пояснений и markdown."
+           :"Подбери палитру, шрифты, текстуру и анимации под тематику клиента. Верни ответ строго одним JSON-объектом по схеме ниже и полем \"note\" — одно предложение, что получилось. Без пояснений, без markdown, без комментариев.",
+      SCHEMA_TEXT
+    ].join("\n").replace(/^\n+/,"");
+  }
+
+  // ===== Утилиты интерфейса =====
+  function toast(t){var d=document.createElement("div");d.className="toast";d.setAttribute("role","status");d.textContent=t;document.body.appendChild(d);setTimeout(function(){d.remove();},2600);}
+  function copyText(t,done){
+    var fb=function(){var ta=document.createElement("textarea");ta.value=t;ta.style.position="fixed";ta.style.opacity="0";document.body.appendChild(ta);ta.select();var ok=false;try{ok=document.execCommand("copy");}catch(e){}ta.remove();done(ok);};
+    try{if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){done(true);},fb);return;}}catch(e){}
+    fb();
+  }
+  function saveFile(name,data,type){
+    var blobSave=function(){try{var u=URL.createObjectURL(new Blob([data],{type:type}));var a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u);},4000);toast("Файл скачан: "+name);}catch(e){toast("Не получилось скачать файл");}};
+    if(window.claude&&window.claude.use){window.claude.use("downloads").then(function(d){if(!d){blobSave();return;}d.save({filename:name,data:data}).then(function(r){if(r&&r.status)toast("Файл сохранён: "+name);},function(){toast("Сохранение отменено");});},blobSave);}
+    else blobSave();
+  }
+  var WARN_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 9v4M12 17h.01M10.3 3.9L1.8 18a2 2 0 001.7 3h17a2 2 0 001.7-3L13.7 3.9a2 2 0 00-3.4 0z"/></svg>';
+  function remind(text){return '<div class="remind" role="note">'+WARN_IC+'<span>'+esc(text||CFG.reminder)+'</span></div>';}
+  function initials(n){return esc(String(n||"?").trim().split(/\s+/).slice(0,2).map(function(w){return w.charAt(0);}).join("").toUpperCase()||"?");}
+  function readImage(file,max,square,cb){
+    if(!file||!/^image\//.test(file.type)){if(file)toast("Это не картинка");return;}
+    if(file.type==="image/svg+xml"&&!square){if(file.size>300000){toast("SVG больше 300 КБ");return;}var r0=new FileReader();r0.onload=function(){cb(r0.result);};r0.readAsDataURL(file);return;}
+    var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){
+      var sw=im.width,sh=im.height,sx=0,sy=0,w,h;
+      if(square){var s=Math.min(sw,sh);sx=(sw-s)/2;sy=(sh-s)/2;sw=sh=s;w=h=max;}else{var k=Math.min(1,max/Math.max(sw,sh));w=Math.round(sw*k);h=Math.round(sh*k);}
+      var cv=document.createElement("canvas");cv.width=w;cv.height=h;cv.getContext("2d").drawImage(im,sx,sy,sw,sh,0,0,w,h);
+      cb(square?cv.toDataURL("image/jpeg",.82):cv.toDataURL("image/png"));};
+      im.onerror=function(){toast("Не удалось открыть картинку");};im.src=r.result;};r.readAsDataURL(file);
+  }
+
+  // ===== Папка проекта: результаты этапов =====
+  var urls={},hasFSA=typeof window.showDirectoryPicker==="function",autoTried={};
+  var IDB=(function(){var dbp=null;function db(){if(!dbp)dbp=new Promise(function(res,rej){try{var r=indexedDB.open("studio-fs3",1);r.onupgradeneeded=function(){r.result.createObjectStore("h");};r.onsuccess=function(){res(r.result);};r.onerror=function(){rej(r.error);};}catch(e){rej(e);}});return dbp;}
+    function tx(mode,fn){return db().then(function(d){return new Promise(function(res,rej){var t=d.transaction("h",mode),s=t.objectStore("h"),q=fn(s);t.oncomplete=function(){res(q&&q.result);};t.onerror=function(){rej(t.error);};});});}
+    return {get:function(k){return tx("readonly",function(s){return s.get(k);}).catch(function(){return null;});},set:function(k,v){return tx("readwrite",function(s){return s.put(v,k);}).catch(function(){});}};})();
+  function clearUrls(){Object.keys(urls).forEach(function(k){try{URL.revokeObjectURL(urls[k]);}catch(e){}});urls={};}
+  function rel(p){return String(p||"").replace(/^\.?\//,"");}
+  // Getter: file(путь от папки клиента) → File|null, dirs(путь) → имена подпапок
+  function dirGetter(root){
+    function walk(dir,parts){if(!parts.length)return Promise.resolve(dir);return dir.getDirectoryHandle(parts[0]).then(function(d){return walk(d,parts.slice(1));});}
+    function list(d){var it=d.values(),out=[];function step(){return it.next().then(function(r){if(r.done)return out;if(r.value.kind==="directory")out.push(r.value.name);return step();});}return step();}
+    return {
+      file:function(path){var parts=rel(path).split("/").filter(Boolean),name=parts.pop();return walk(root,parts).then(function(d){return d.getFileHandle(name);}).then(function(h){return h.getFile();}).catch(function(){return null;});},
+      dirs:function(path){return walk(root,rel(path).split("/").filter(Boolean)).then(list).catch(function(){return [];});}
+    };
+  }
+  function mapGetter(files){
+    var map={};files.forEach(function(x){var ps=x.path.split("/");ps.shift();map[ps.join("/")]=x.file;});
+    return {
+      file:function(path){return Promise.resolve(map[rel(path)]||null);},
+      dirs:function(path){var p=rel(path).replace(/\/?$/,"/"),s={};Object.keys(map).forEach(function(k){if(k.indexOf(p)===0){var rest=k.slice(p.length).split("/");if(rest.length>1)s[rest[0]]=1;}});return Promise.resolve(Object.keys(s));}
+    };
+  }
+  function readEntries(entry,prefix,out){
+    return new Promise(function(res){
+      if(entry.isFile){entry.file(function(f){out.push({path:prefix+entry.name,file:f});res();},function(){res();});return;}
+      var r=entry.createReader(),all=[];
+      (function more(){r.readEntries(function(es){if(!es.length){Promise.all(all.map(function(e){return readEntries(e,prefix+entry.name+"/",out);})).then(res);return;}all=all.concat(es);more();},function(){res();});})();
+    });
+  }
+  var KEYF={cut:"cut.xml",graphics:"manifest.json",test:"project.xml",final:"project.xml"};
+  // последняя версия этапа с ключевым файлом: {v, base, file}
+  function latest(g,id){
+    var base=prDir(id);
+    return g.dirs(base).then(function(ds){
+      var vs=ds.filter(function(d){return /^v\d+$/i.test(d);}).sort(function(a,b){return parseInt(b.slice(1),10)-parseInt(a.slice(1),10);});
+      var k=0;function next(){if(k>=vs.length)return null;var v=vs[k++];return g.file(base+v+"/"+KEYF[id]).then(function(f){return f?{v:v,base:base+v+"/",file:f}:next();});}
+      return next();
+    });
+  }
+  function scan(c,g,folderName){
+    var res={found:[],warn:[]},now=new Date().toISOString();
+    var simple=["cut","test","final"].map(function(id){
+      return latest(g,id).then(function(L){
+        if(!L)return;
+        c.out[id]={found:true,at:now,version:L.v};res.found.push(stage(id).title+" "+L.v);
+        return g.file(L.base+"preview.mp4").then(function(pv){if(pv){urls[id]=URL.createObjectURL(pv);c.out[id].preview=true;}});
+      });});
+    var gr=latest(g,"graphics").then(function(L){
+      if(!L)return;
+      return L.file.text().then(function(t){
+        var m;try{m=JSON.parse(t);}catch(e){res.warn.push(L.base+"manifest.json сломан: "+e.message);return;}
+        if(!m||!Array.isArray(m.brolls)){res.warn.push("В "+L.base+"manifest.json нет списка brolls.");return;}
+        var list=m.brolls.filter(function(x){return x&&x.id;}).map(function(x){return {id:String(x.id),name:String(x.name||x.id),type:x.layout||x.type||"",start:x.start||"",end:x.end||"",text:x.text||"",speech:x.speech||"",preview:rel(x.preview),poster:rel(x.poster),file:rel(x.file),note:x.note||""};});
+        c.out.graphics={found:true,at:now,version:L.v,manifest:{generatedAt:m.generatedAt||"",source:m.source||null,brolls:list}};res.found.push("Графика "+L.v);
+        return Promise.all(list.map(function(x){return Promise.all([x.preview?g.file(L.base+x.preview):null,x.poster?g.file(L.base+x.poster):null]).then(function(r){
+          if(r[0])urls["g:"+x.id]=URL.createObjectURL(r[0]);if(r[1])urls["p:"+x.id]=URL.createObjectURL(r[1]);});}));
+      });
+    });
+    var bb=g.file(F.brand+"/brandbook.json").then(function(f){if(!f)return;var lm=f.lastModified||0;if(c.brandImportedAt&&lm<=c.brandImportedAt)return;
+      return f.text().then(function(t){var r=parseClaude(t);
+        if(r.ok){c.brandPrev=c.brandOverride?clone(c.brandOverride):null;c.brandOverride=mergeOverride(c.brandOverride,r.ok);c.brandImportedAt=lm;c.brandLog.unshift({text:"Claude Code: "+F.brand+"/brandbook.json",note:r.ok.note?String(r.ok.note).slice(0,200):"",at:now});c.brandLog=c.brandLog.slice(0,10);if(c.approved){c.approved=false;res.warn.push("Стиль обновлён из Claude Code — утвердите брендбук заново.");}res.found.push("новый стиль брендбука");}
+        else res.warn.push(F.brand+"/brandbook.json не применён: "+r.err[0]);});});
+    return Promise.all(simple.concat([gr,bb])).then(function(){c.folder={name:folderName||(c.folder&&c.folder.name)||"",at:now};saveCard(c);return res;});
+  }
+
+  // ===== Запись в папку клиента =====
+  var handles={},ROOT=null;
+  function canWrite(c){return !!handles[c.id];}
+  function mkdirs(root,path){var ps=rel(path).split("/").filter(Boolean);function walk(d,ps){if(!ps.length)return Promise.resolve(d);return d.getDirectoryHandle(ps[0],{create:true}).then(function(n){return walk(n,ps.slice(1));});}return walk(root,ps);}
+  function writeAt(root,path,data){
+    var parts=rel(path).split("/").filter(Boolean),name=parts.pop();
+    return mkdirs(root,parts.join("/")).then(function(d){return d.getFileHandle(name,{create:true});}).then(function(fh){return fh.createWritable();}).then(function(w){return w.write(data).then(function(){return w.close();});});
+  }
+  function dataUrlBlob(u){var m=/^data:([^;,]+)(;base64)?,(.*)$/.exec(u||"");if(!m)return null;var bin=m[2]?atob(m[3]):decodeURIComponent(m[3]);var a=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return new Blob([a],{type:m[1]});}
+  function projectJSON(c){var o=clone(c);delete o.folder;return {schema:"studio-project/2",savedAt:new Date().toISOString(),folders:F,settings:{libraryMode:DB.settings.libraryMode,libraryPath:DB.settings.libraryPath,library:lib()},brandbook:brandJSON(c),client:o};}
+  function readmeText(c){return ["Папка клиента «"+c.name+"». Её создал сайт студии.","",
+    F.src+" — сюда исходники видео.",F.refs+" — сюда референсы: картинки, скриншоты, ссылки в текстовом файле.",F.brand+" — брендбук клиента и лого, если есть. Сюда же Claude кладёт итоговый стиль.",
+    F.pr+" — всё для Premiere Pro. Внутри этапы, в каждом этапе версии v01, v02… Импортируйте XML в Premiere и сохраняйте проект .prproj в ту же папку версии.",
+    F.tech+" — служебная папка: задания для Claude Code, шаблоны графики, рабочие файлы. Руками не меняйте.","",
+    "Не переименовывайте эти папки: по их именам работают сайт и Claude Code.","Claude Code запускайте в этой папке: команды /studio:cut, /studio:graphics, /studio:test-minute, /studio:final, /studio:brand."].join("\n");}
+  function ensureStructure(h){var ps=[F.src,F.refs,F.brand,F.tech+"/"+F.tasks,F.tech+"/"+F.tpl,F.tech+"/"+F.work].concat(Object.keys(F.stages).map(function(k){return F.pr+"/"+F.stages[k];}));
+    return ps.reduce(function(p,x){return p.then(function(){return mkdirs(h,x);});},Promise.resolve());}
+  function writeStudio(c){
+    var h=handles[c.id];if(!h)return Promise.reject(new Error("Папка клиента не подключена на запись"));
+    var T=F.tech+"/";
+    var jobs=[[T+"project.json",JSON.stringify(projectJSON(c),null,2)],[T+"brandbook.json",JSON.stringify(brandJSON(c),null,2)],[F.readme,readmeText(c)]];
+    Object.keys(CFG.taskFiles).forEach(function(id){jobs.push([T+F.tasks+"/"+CFG.taskFiles[id]+".md",taskText(c,id)]);});
+    var lb=c.logo&&dataUrlBlob(c.logo);if(lb)jobs.push([F.brand+"/logo."+(lb.type==="image/svg+xml"?"svg":"png"),lb]);
+    return ensureStructure(h).then(function(){return jobs.reduce(function(p,j){return p.then(function(){return writeAt(h,j[0],j[1]);});},Promise.resolve());}).then(function(){c.writtenAt=new Date().toISOString();saveCard(c);});
+  }
+  function safeName(n){return String(n||"Клиент").replace(/[\/\\:*?"<>|]+/g," ").replace(/\s+/g," ").trim().slice(0,60)||"Клиент";}
+  // Папка клиента внутри главной: создаётся при первом сохранении имени
+  function clientDir(c,create){
+    if(handles[c.id])return Promise.resolve(handles[c.id]);
+    if(!ROOT||!c.name)return Promise.resolve(null);
+    var base=c.dir||safeName(c.name);
+    function tryName(name,k){return ROOT.getDirectoryHandle(name).then(function(h){
+        return dirGetter(h).file(F.tech+"/project.json").then(function(f){if(!f)return h;return f.text().then(function(t){var id=null;try{id=JSON.parse(t).client.id;}catch(e){}return id===c.id||!id?h:tryName(base+" "+(k+1),k+1);});});
+      },function(){if(!create)return null;return ROOT.getDirectoryHandle(name,{create:true});});}
+    return tryName(base,1).then(function(h){if(!h)return null;handles[c.id]=h;var isNew=c.dir!==h.name;c.dir=h.name;saveCard(c);
+      return (isNew||create?writeStudio(c):Promise.resolve()).then(function(){return h;},function(){return h;});});
+  }
+  function scanMsg(r){
+    if(!r.found.length&&!r.warn.length)return "Результатов пока нет. Сайт ищет версии в «"+F.pr+"» и стиль в «"+F.brand+"»: их создаёт Claude Code.";
+    return ((r.found.length?"Найдено: "+r.found.join(", ")+".":"")+(r.warn.length?" "+r.warn.join(" "):"")).trim();
+  }
+  var pendingMsg=null;
+  function afterScan(c,r){toast(r.found.length?"Обновлено: "+r.found.join(", "):"Результатов пока нет");pendingMsg={t:scanMsg(r),soft:!r.found.length||r.warn.length>0};renderProject();}
+  function setFolderMsg(t,soft){var el=$("fmsg");if(el){el.textContent=t;el.className=soft?"muted":"okm";el.hidden=!t;}}
+  function syncClient(c,silent){
+    return clientDir(c,true).then(function(h){
+      if(!h)return null;clearUrls();
+      return scan(c,dirGetter(h),(ROOT?ROOT.name+"/":"")+h.name).then(function(r){return writeStudio(c).then(function(){return r;},function(){r.warn.push("Не удалось записать служебные файлы.");return r;});});
+    }).then(function(r){if(!r)return;if(silent)renderProject();else afterScan(c,r);}).catch(function(e){if(!silent)setFolderMsg(e&&e.message||"Не удалось прочитать папку",true);});
+  }
+  // Запасной путь без главной папки: подключить папку клиента напрямую
+  function connectFolder(c){
+    window.showDirectoryPicker({id:"studio-client",mode:"readwrite"}).then(function(h){handles[c.id]=h;c.dir=h.name;return IDB.set("dir:"+c.id,h).then(function(){return syncClient(c,false);});})
+      .catch(function(e){if(e&&e.name==="AbortError")return;if(e&&(e.name==="SecurityError"||e.name==="NotAllowedError"||e.name==="TypeError")){hasFSA=false;pendingMsg={t:"Здесь браузер не даёт работать с папками. Откройте сайт в Chrome, Edge или Arc.",soft:true};renderProject();return;}setFolderMsg(e&&e.message||"Не удалось открыть папку",true);});
+  }
+  function refreshFolder(c,silent){
+    if(handles[c.id]||ROOT)return syncClient(c,silent);
+    return IDB.get("dir:"+c.id).then(function(h){
+      if(!h||typeof h.queryPermission!=="function"){if(!silent&&hasFSA)connectFolder(c);return;}
+      var ask=silent?h.queryPermission({mode:"readwrite"}):h.requestPermission({mode:"readwrite"});
+      return ask.then(function(p){if(p!=="granted"){if(!silent)setFolderMsg("Нет доступа к папке. Нажмите «Обновить» и разрешите доступ.",true);return;}handles[c.id]=h;return syncClient(c,silent);});
+    }).catch(function(){});
+  }
+  // Главная папка студии
+  var LIBOK=false;
+  function checkLib(){var m=DB.settings.libraryMode;
+    if(m==="custom"){LIBOK=!!String(DB.settings.libraryPath||"").trim();return Promise.resolve(LIBOK);}
+    if(m==="root"&&ROOT)return ROOT.getDirectoryHandle(F.library).then(function(){LIBOK=true;return true;},function(){LIBOK=false;return false;});
+    LIBOK=false;return Promise.resolve(false);}
+  // Библиотека создаётся сама в главной папке, если не выбрана своя
+  var LIB_README="Библиотека студии.\n\nmusic — треки, sfx — звуки, templates — шаблоны графики.\nКаталог catalog.csv делает команда /studio:catalog в Claude Code.\nНе переименовывайте папку: по её имени работают сайт и Claude Code.";
+  function ensureLib(){
+    if(!ROOT||DB.settings.libraryMode==="custom")return Promise.resolve();
+    return ["music","sfx","templates"].reduce(function(p,x){return p.then(function(){return mkdirs(ROOT,F.library+"/"+x);});},Promise.resolve())
+      .then(function(){return ROOT.getDirectoryHandle(F.library).then(function(d){return d.getFileHandle(F.readme).catch(function(){return writeAt(ROOT,F.library+"/"+F.readme,LIB_README);});});})
+      .then(function(){DB.settings.libraryMode="root";LIBOK=true;persist();},function(){});
+  }
+  function setRoot(h){ROOT=h;DB.settings.rootName=h?h.name:"";persist();handles={};}
+  function pickRoot(){
+    return window.showDirectoryPicker({id:"studio-root",mode:"readwrite"}).then(function(h){setRoot(h);return IDB.set("root",h).then(function(){return discover();});});
+  }
+  function restoreRoot(ask){
+    return IDB.get("root").then(function(h){if(!h||typeof h.queryPermission!=="function")return false;
+      return (ask?h.requestPermission({mode:"readwrite"}):h.queryPermission({mode:"readwrite"})).then(function(p){if(p==="granted"){setRoot(h);return true;}DB.settings.rootName=h.name;return false;});}).catch(function(){return false;});
+  }
+  // Найти в главной папке проекты, которых нет в списке
+  function discover(){
+    if(!ROOT)return Promise.resolve(0);
+    var it=ROOT.values(),dirs=[];function step(){return it.next().then(function(r){if(r.done)return dirs;if(r.value.kind==="directory")dirs.push(r.value);return step();});}
+    return ensureLib().then(checkLib).then(step).then(function(ds){var n=0;return Promise.all(ds.map(function(d){return dirGetter(d).file(F.tech+"/project.json").then(function(f){if(!f)return;return f.text().then(function(t){
+        var o;try{o=JSON.parse(t);}catch(e){return;}var cc=norm(o.client||o);if(!cc||!cc.id||!cc.name||DB.deleted[cc.id])return;cc.dir=d.name;handles[cc.id]=d;
+        var old=DB.clients[cc.id];if(!old||String(old.updatedAt||"")<String(cc.updatedAt||"")){if(old&&old.avatar&&!cc.avatar)cc.avatar=old.avatar;DB.clients[cc.id]=cc;n++;}else{old.dir=d.name;}});});})).then(function(){persist();return n;});});
+  }
+
+  // ===== Навигация =====
+  var S={view:"home",stage:"info",card:null,confirmDel:false,refImgs:[],editAud:false},avTarget=null;
+  function go(view){S.view=view;render();window.scrollTo(0,0);}
+  function openProject(c,stageId){S.editAud=false;S.refImgs.forEach(function(x){URL.revokeObjectURL(x.url);});S.refImgs=[];if(!S.card||S.card.id!==c.id)clearUrls();S.card=c;S.stage=stageId||nextStage(c);S.confirmDel=false;S._last=null;go("project");}
+
+  // ===== Клиенты =====
+  var FOLDER_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 7a2 2 0 012-2h4l2 2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V7z"/></svg>';
+  var NOTE_IC='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>';
+  function libPanel(){
+    var L=lib(),m=DB.settings.libraryMode;
+    return '<section class="block card lib" aria-labelledby="libh"><div class="row"><h3 id="libh">Библиотека студии</h3><span class="spacer"></span><button type="button" class="btn sm ghost" id="libx">Закрыть</button></div>'+
+      '<p class="muted">Музыка, звуки и шаблоны графики, общие для всех клиентов. Claude Code берёт звук только отсюда.</p>'+
+      '<div class="opts sm" role="radiogroup" aria-label="Где библиотека">'+
+        '<button type="button" class="opt card compact" role="radio" aria-checked="'+(m==="root")+'" id="libroot"'+(ROOT?"":' aria-disabled="true"')+'><span class="tx"><b>В главной папке <span class="rec in">Рекомендуем</span></b><span>'+(ROOT?"Сайт создаст «"+esc(F.library)+"» рядом с папками клиентов. Claude найдёт её без настройки путей.":"Сначала выберите главную папку.")+'</span></span></button>'+
+        '<button type="button" class="opt card compact" role="radio" aria-checked="'+(m==="custom")+'" id="libcust"><span class="tx"><b>Своя папка</b><span>Например, на внешнем диске. Нужно вписать полный путь: браузер его не видит.</span></span></button></div>'+
+      (m==="custom"?'<label class="f"><b>Полный путь к библиотеке</b><input type="text" id="libp" value="'+esc(DB.settings.libraryPath||"")+'" placeholder="/Users/имя/Studio/Библиотека" autocomplete="off" spellcheck="false"><span class="muted tiny">В Finder: правый клик по папке с зажатым Option → «Скопировать путь».</span></label>':"")+
+      '<pre class="prompt tree">'+esc((L.none?F.library:(m==="root"?F.library:L.root))+"/\n  music/        треки\n  sfx/          звуки\n  templates/    шаблоны графики (/studio:save-templates)\n  catalog.csv   описания, BPM, громкость (/studio:catalog)")+'</pre>'+
+      '<p class="muted tiny">Команды /studio:catalog и /studio:save-templates — из плагина студии для Claude Code. Установка — в блоке «Начало работы».</p></section>';
+  }
+  function cmdRow(cmd,id){return '<div class="cmd"><code>'+esc(cmd)+'</code><button type="button" class="btn sm" data-copy="'+esc(cmd)+'">Копировать</button></div>';}
+  // Плагин ставится с GitHub одной командой; адрес репозитория — в config.json → plugin.repo
+  var PLUG=CFG.plugin||{};
+  function plugName(){return PLUG.name||"studio";}
+  function plugId(){return plugName()+"@"+(PLUG.marketplace||"kit");}
+  function plugInstallCmd(){var r=String(PLUG.repo||"").trim();return r?"claude plugin install "+plugName()+" --marketplace "+r:"";}
+  // Одна команда: Claude Code + PATH + плагин + автообновление плагина (plutil есть на любом Mac). Повторный запуск безопасен.
+  function setupCmd(){var r=String(PLUG.repo||"").trim();if(!r)return "";
+    return "curl -fsSL https://claude.ai/install.sh | bash && (grep -q '.local/bin' ~/.zshrc 2>/dev/null || echo 'export PATH=\"$HOME/.local/bin:$PATH\"' >> ~/.zshrc) && ~/.local/bin/claude plugin install "+plugName()+" --marketplace "+r+" && (plutil -replace extraKnownMarketplaces."+(PLUG.marketplace||"kit")+".autoUpdate -bool YES ~/.claude/settings.json || true)";}
+  function plugSteps(){
+    var cmd=setupCmd();
+    if(!cmd)return '<p class="muted">Адрес плагина на сайте ещё не указан. Обратитесь к тому, кто дал вам ссылку на сайт.</p>';
+    return '<ol class="sub">'+
+      '<li><b>Откройте Терминал:</b> нажмите <code>Cmd + Пробел</code>, напечатайте «Терминал», Enter.</li>'+
+      '<li><b>Скопируйте команду, вставьте в Терминал (<code>Cmd + V</code>) и нажмите Enter.</b> Она установит Claude Code и плагин студии.'+cmdRow(cmd)+
+        '<span class="muted">Займёт 1–3 минуты, процентов не будет. Готово, когда в конце появится «Successfully installed plugin: '+esc(plugId())+'».</span></li>'+
+      '<li><b>Закройте Терминал и откройте снова.</b> Напечатайте <code>claude</code> и нажмите Enter. В первый раз откроется браузер: войдите в аккаунт Claude (нужна подписка Pro или Max). Claude спросит «Do you trust this folder?» — нажмите Enter (выбран ответ «Yes»). Напечатайте <code>/studio</code> и <b>не нажимайте Enter</b>: должен появиться список команд. Это проверка, запускать сейчас ничего не нужно. Нажмите Esc, сотрите текст и выйдите командой <code>/exit</code>.</li>'+
+      '<li><label class="chk"><input type="checkbox" id="obplug"> Всё получилось</label></li></ol>';
+  }
+  function onboarding(list){
+    if(!hasFSA)return "";
+    var hasProj=list.some(function(c){return !!c.dir;});
+    var steps=[
+      {id:"root",done:!!ROOT,t:"Выберите папку студии",d:ROOT?"«"+ROOT.name+"»: здесь будут папки клиентов и «"+F.library+"» для музыки и звуков.":DB.settings.rootName?"Браузер забыл доступ к «"+DB.settings.rootName+"» после перезапуска. Нажмите и разрешите.":"Здесь сайт будет создавать папки клиентов. В окне выбора откройте «Документы», нажмите «Новая папка», назовите «Студия» и нажмите «Выбрать». Chrome спросит разрешение — разрешите.",
+        b:ROOT?"":(DB.settings.rootName?"Подключить «"+DB.settings.rootName+"»":"Выбрать папку")},
+      {id:"plug",done:!!DB.settings.pluginDone,t:"Установите Claude Code и плагин",d:DB.settings.pluginDone?"Команды /studio:cut, /studio:graphics и другие доступны в Claude Code.":"Один раз. Одна команда в Терминале.",b:""},
+      {id:"proj",done:hasProj,t:"Создайте первого клиента",d:hasProj?"Папки клиентов создаются сами.":"Укажите имя и тематику — сайт создаст папку клиента со всей структурой.",b:hasProj?"":"Новый клиент"}];
+    var n=steps.filter(function(s){return s.done;}).length;
+    if(n===steps.length&&!S.obOpen)return '<div class="obdone"><span>'+CHECK+' Всё подключено</span><button type="button" class="lnk" id="obshow">показать шаги</button></div>';
+    var cur=steps.filter(function(s){return !s.done;})[0];
+    return '<section class="ob card" aria-labelledby="obh"><div class="row"><h2 id="obh">Начало работы</h2><span class="spacer"></span><span class="muted">'+n+' из '+steps.length+'</span>'+(n===steps.length?'<button type="button" class="btn sm ghost" id="obhide">Свернуть</button>':"")+'</div>'+
+      '<ol class="obl">'+steps.map(function(s,i){var isCur=cur&&cur.id===s.id;
+        return '<li class="'+(s.done?"done ":"")+(isCur?"cur":"")+'"><span class="obn">'+(s.done?CHECK:(i+1))+'</span><div class="obt"><b>'+esc(s.t)+'</b><span class="muted">'+esc(s.d)+'</span>'+
+          (s.id==="plug"&&!s.done&&isCur?plugSteps():"")+
+          (s.id==="plug"&&s.done?'<span class="muted">Обновить плагин до новой версии:</span>'+cmdRow("claude plugin update "+plugId())+'<button type="button" class="lnk" id="obplugundo">отметить как не установленный</button>':"")+
+          '</div>'+(s.b?'<button type="button" class="btn sm'+(isCur?" pri":"")+'" data-ob="'+s.id+'">'+esc(s.b)+'</button>':"")+'</li>';}).join("")+'</ol></section>';
+  }
+  function renderHome(){
+    var list=Object.keys(DB.clients).map(function(k){return DB.clients[k];}).sort(function(a,b){return (b.updatedAt||"").localeCompare(a.updatedAt||"");});
+    var L=lib(),rn=ROOT?ROOT.name:DB.settings.rootName;
+    var h='<div class="wrap"><div class="top"><span class="brand">Студия · <span>проекты клиентов</span></span><span class="spacer"></span>'+
+      '<button type="button" class="btn sm ghost" id="imp">Импорт JSON</button><button type="button" class="btn sm ghost" id="exp">Экспорт JSON</button><input type="file" id="impf" accept=".json,application/json" hidden><input type="file" id="avf" accept="image/*" hidden></div>'+
+      '<div class="row"><h1>Клиенты</h1><span class="spacer"></span>'+
+        '<button type="button" class="btn fbtn" id="rootb" title="Главная папка студии: в ней создаются папки клиентов">'+FOLDER_IC+'<span>'+(ROOT?esc(rn):rn?"Подключить «"+esc(rn)+"»":"Главная папка")+'</span></button>'+
+        '<button type="button" class="btn fbtn" id="libb" aria-expanded="'+!!S.libOpen+'">'+NOTE_IC+'<span>Библиотека'+(L.none?"":" ✓")+'</span></button>'+
+        '<button type="button" class="btn pri" id="newc">Новый клиент</button></div>'+
+      (hasFSA?onboarding(list)
+        :'<div class="remind" role="note">'+WARN_IC+'<span>Этот браузер не умеет работать с папками. Откройте сайт в Chrome, Edge или Arc — или создавайте папки клиентов вручную по структуре из «'+esc(F.readme)+'».</span></div>')+
+      (S.libOpen?libPanel():"")+
+      (storageOk?"":'<p class="err">Браузер не даёт сохранять данные. Делайте экспорт JSON, чтобы не потерять клиентов.</p>');
+    if(!list.length)h+='<div class="card empty"><p>Пока нет клиентов.</p><button type="button" class="btn pri" id="newc2">Создать первого</button></div>';
+    else h+='<div class="clients">'+list.map(function(c){var n=doneCount(c);
+      return '<div class="cl card"><div class="clh"><button type="button" class="av" data-a="avatar" data-id="'+esc(c.id)+'" aria-label="'+(c.avatar?"Сменить фото":"Загрузить фото")+' клиента '+esc(c.name)+'" title="'+(c.avatar?"Сменить фото":"Загрузить фото")+'">'+(c.avatar?'<img src="'+esc(c.avatar)+'" alt="">':'<span>'+initials(c.name)+'</span>')+'</button>'+
+        '<div class="clt"><b>'+esc(c.name)+'</b><span class="muted">'+esc(c.topic||"тематика не указана")+'</span></div></div>'+
+        '<div class="cprog"><div class="meta"><span>Этапов '+n+' из '+STAGES.length+'</span><span>'+esc(n>=STAGES.length?"всё готово":"дальше: "+lc1(stage(nextStage(c)).title))+'</span></div><div class="track"><i style="width:'+Math.round(n/STAGES.length*100)+'%"></i></div></div>'+
+        (c.dir?'<span class="muted tiny cdir">'+FOLDER_IC+esc((rn?rn+" / ":"")+c.dir)+'</span>':"")+
+        (S.confirmDel===c.id?'<div class="cdel"><span>Удалить «'+esc(c.name)+'» с сайта? Папка на диске останется, удалить её можно в Finder.</span><div class="row"><button type="button" class="btn sm" data-a="delyes" data-id="'+esc(c.id)+'">Удалить</button><button type="button" class="btn sm ghost" data-a="delno" data-id="'+esc(c.id)+'">Отмена</button></div></div>':
+        '<div class="row"><button type="button" class="btn pri" data-a="open" data-id="'+esc(c.id)+'">Проект</button><button type="button" class="btn ghost" data-a="del" data-id="'+esc(c.id)+'">Удалить</button></div>')+'</div>';}).join("")+'</div>';
+    h+='</div>';
+    $("app").innerHTML=h;
+    $("rootb").onclick=function(){
+      if(!hasFSA){toast("Нужен Chrome, Edge или Arc");return;}
+      var go2=ROOT||!rn?pickRoot():restoreRoot(true).then(function(ok){return ok?discover():pickRoot();});
+      go2.then(function(n){toast(ROOT?"Главная папка: "+ROOT.name+(n?" · найдено проектов: "+n:""):"Папка не подключена");renderHome();})
+        .catch(function(e){if(e&&e.name==="AbortError")return;if(e&&(e.name==="SecurityError"||e.name==="NotAllowedError")){hasFSA=false;renderHome();return;}toast(e&&e.message||"Не удалось подключить папку");});};
+    $("libb").onclick=function(){S.libOpen=!S.libOpen;renderHome();};
+    $("app").querySelectorAll("[data-ob]").forEach(function(b){b.onclick=function(){var k=b.dataset.ob;
+      if(k==="root")$("rootb").click();else if(k==="lib"){S.libOpen=true;renderHome();var p=document.querySelector(".lib");if(p)p.scrollIntoView({block:"nearest"});}else if(k==="proj")$("newc").click();};});
+    $("app").querySelectorAll("[data-copy]").forEach(function(b){b.onclick=function(){copyText(b.dataset.copy,function(ok){toast(ok?"Скопировано. Вставьте в Терминал: Cmd + V, затем Enter":"Не удалось скопировать");});};});
+    if($("obplug"))$("obplug").onchange=function(){DB.settings.pluginDone=this.checked;persist();renderHome();};
+    if($("obplugundo"))$("obplugundo").onclick=function(){DB.settings.pluginDone=false;persist();renderHome();};
+    if($("obshow"))$("obshow").onclick=function(){S.obOpen=true;renderHome();};
+    if($("obhide"))$("obhide").onclick=function(){S.obOpen=false;renderHome();};
+    if(S.libOpen){
+      $("libx").onclick=function(){S.libOpen=false;renderHome();};
+      $("libroot").onclick=function(){if(!ROOT){toast("Сначала выберите главную папку");return;}
+        DB.settings.libraryMode="";ensureLib().then(function(){toast(LIBOK?"Библиотека в главной папке":"Не удалось создать библиотеку");S.libOpen=false;renderHome();});};
+      $("libcust").onclick=function(){DB.settings.libraryMode="custom";persist();checkLib();renderHome();var el=$("libp");if(el)el.focus();};
+      if($("libp"))$("libp").onchange=function(){DB.settings.libraryPath=this.value.trim();persist();checkLib().then(function(){toast(DB.settings.libraryPath?"Путь сохранён":"Путь пустой");renderHome();});};
+    }
+    var nc=function(){openProject(newCard(),"info");};
+    $("newc").onclick=nc;if($("newc2"))$("newc2").onclick=nc;
+    $("exp").onclick=function(){saveFile("studio-clients-"+new Date().toISOString().slice(0,10)+".json",JSON.stringify({schema:"studio-clients/2",exportedAt:new Date().toISOString(),clients:list},null,2),"application/json");};
+    $("imp").onclick=function(){$("impf").click();};
+    $("impf").onchange=function(){var f=this.files&&this.files[0];if(!f)return;var r=new FileReader();r.onload=function(){
+      try{var d=JSON.parse(r.result);var arr=Array.isArray(d)?d:(d.clients||(d.card?[d.card]:null));if(!Array.isArray(arr))throw new Error("нет списка clients");
+        var n=0;arr.forEach(function(c){if(c&&c.id&&c.name){DB.clients[c.id]=norm(c);n++;}});persist();toast("Импортировано клиентов: "+n);renderHome();}
+      catch(e){toast("Файл не подходит: "+e.message);}};r.readAsText(f);};
+    $("avf").onchange=function(){var c=DB.clients[avTarget];if(!c)return;readImage(this.files&&this.files[0],160,true,function(d){c.avatar=d;persist();if(!storageOk){c.avatar="";toast("Не хватило места в браузере для фото");}else toast("Фото обновлено");renderHome();});};
+    $("app").querySelectorAll("[data-a]").forEach(function(b){b.onclick=function(){
+      var c=DB.clients[b.dataset.id];if(!c)return;
+      var a=b.dataset.a;
+      if(a==="avatar"){avTarget=c.id;$("avf").value="";$("avf").click();}
+      else if(a==="del"){S.confirmDel=c.id;renderHome();}
+      else if(a==="delno"){S.confirmDel=false;renderHome();}
+      else if(a==="delyes"){delete DB.clients[c.id];DB.deleted[c.id]=true;delete handles[c.id];S.confirmDel=false;persist();toast("Клиент удалён с сайта");renderHome();}
+      else openProject(clone(c));
+    };});
+  }
+
+  // ===== Проект =====
+  function optCard(o,group,checked,rec,dis){
+    var g=G[group],pv="";
+    if(g.preview){
+      var inner;
+      if(o.preview&&o.preview.src){var t=o.preview.type||"image";inner=t==="video"?'<video src="'+esc(o.preview.src)+'" muted loop autoplay playsinline></video>':'<img src="'+esc(o.preview.src)+'" alt="">';}
+      else if(group==="format")inner='<span class="shp '+esc(o.id)+'"><i class="fh"></i><i class="fv"></i></span>';
+      else if(group==="style"&&o.id==="exact")inner='<span class="bbdoc"><i></i><i></i><i></i></span>';
+      else if(group==="style"&&o.params.brand){var p=o.params.brand.palette,f=o.params.brand.fonts.display;loadFont(f);
+        inner='<span class="ff" style="font-family:\''+esc(fam(f.family))+'\',sans-serif;font-weight:'+(+f.weight||700)+'">Аа</span><span class="sw">'+["dark","light","accent","glow","metal"].map(function(k){return '<i style="background:'+esc(p[k])+'"></i>';}).join("")+'</span>';}
+      else inner='<span>превью</span>';
+      pv='<span class="pv">'+inner+(rec?'<span class="rec">Рекомендуем</span>':"")+'</span>';
+    }
+    return '<button type="button" class="opt card'+(dis?" dis":"")+(g.preview?"":" compact")+'" '+(g.multi?'aria-pressed':'role="radio" aria-checked')+'="'+(checked?"true":"false")+'"'+(dis?' aria-disabled="true"':"")+' data-g="'+esc(group)+'" data-o="'+esc(o.id)+'">'+pv+
+      '<span class="tx"><b>'+esc(o.name)+(rec&&!g.preview?' <span class="rec in">Рекомендуем</span>':"")+'</b>'+(o.desc?'<span>'+esc(dis&&o.requiresText?o.requiresText:o.desc)+'</span>':"")+'</span></button>';
+  }
+  function groupBlock(c,group){
+    var g=G[group],cur=ans(c,group),rec=recommend(c)[group];
+    return '<div class="grp"><h3>'+esc(g.title)+(g.hint?' <span class="muted hint">'+esc(g.hint)+'</span>':"")+'</h3><div class="opts'+(g.preview?"":" sm")+'" role="'+(g.multi?"group":"radiogroup")+'" aria-label="'+esc(g.title)+'">'+
+      g.options.map(function(o){var dis=o.requires&&Object.keys(o.requires).some(function(k){return (c.answers||{})[k]!==o.requires[k];});var on=g.multi?(cur||[]).indexOf(o.id)>=0:cur===o.id;return optCard(o,group,on,!dis&&rec===o.id,dis);}).join("")+'</div></div>';
+  }
+  function labelPicker(c){
+    var L=CFG.labels;
+    return '<div class="grp"><h3>Цвета пометки <span class="muted hint">'+esc(L.note)+'</span></h3>'+L.targets.map(function(t){var cur=c.answers[t.id]||t.default;
+      return '<div class="lrow"><span class="lt2">'+esc(t.title)+'</span><div class="lchips" role="radiogroup" aria-label="'+esc(t.title)+'">'+L.colors.map(function(col){
+        return '<button type="button" class="lchip" role="radio" aria-checked="'+(cur===col.id)+'" data-lab="'+t.id+'" data-v="'+col.id+'" title="'+esc(col.id+" — "+col.ru)+'"><i style="background:'+col.hex+'"></i><span>'+esc(col.id)+'</span></button>';}).join("")+'</div></div>';}).join("")+'</div>';
+  }
+  function promptBlock(c,id){
+    var s=stage(id),refs=!!s.refs,on=!!c.refs[id],cmd=CFG.commands[id],w=canWrite(c);
+    return '<div class="block card act"><div class="row"><h3>Запуск в Claude Code</h3><span class="spacer"></span>'+(s.note?'<span class="onote '+esc(s.note.level)+'">'+esc(s.note.text)+'</span>':"")+'</div>'+
+      (w?'<ol class="howto"><li>Нажмите «Записать задание в папку».</li><li>В Терминале напечатайте <code>cd</code> и пробел, перетащите папку клиента из Finder в окно Терминала, нажмите Enter. Затем <code>claude</code>, Enter (на вопрос «trust this folder?» — снова Enter), и <code>'+esc(cmd)+'</code>.</li><li>Когда Claude закончит — «Обновить» в блоке «Папка клиента» слева.</li></ol>':
+         '<p class="muted">'+(c.folder?"Папка подключена только на чтение: нажмите «Обновить» в блоке папки и разрешите запись, тогда задание будет записываться само.":"Подключите папку проекта слева: задание будет записываться в неё, а в Claude Code останется запустить <code>"+esc(cmd)+"</code>.")+' Пока можно скопировать промт.</p>')+
+      (refs&&!w?'<label class="chk"><input type="checkbox" id="refs"'+(on?" checked":"")+'> Референсы прикреплены</label><p class="warn" id="rw"'+(on?" hidden":"")+'>Референсы не отмечены: Claude Code остановится и попросит их.</p>':"")+
+      '<div class="row">'+(w?'<button type="button" class="btn pri" id="writet">Записать задание в папку</button><button type="button" class="btn ghost" id="copyp">Копировать промт</button>':'<button type="button" class="btn pri" id="copyp">Копировать промт</button>')+'</div>'+
+      '<details><summary>Показать задание</summary><pre class="prompt" id="cp" tabindex="0">'+esc(taskText(c,id))+'</pre></details></div>';
+  }
+
+  function fmtWhen(iso){return iso?new Date(iso).toLocaleString("ru-RU",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"";}
+  function resultBlock(c,id,body){
+    var o=c.out[id];
+    var inner=body;
+    if(!inner){
+      if(o&&o.found)inner=urls[id]?'<div class="vbox"><video src="'+urls[id]+'" controls playsinline preload="metadata"></video></div>':'<p class="muted">Файлы на месте. '+(o.preview?"Превью появится после «Обновить» в блоке папки проекта.":"Превью preview.mp4 в папке не найдено.")+'</p>';
+      else inner='<p class="muted">Выполните промт в Claude Code, затем нажмите «Обновить» в блоке «Папка проекта». Галочка этапа поставится сама: '+esc(lc1(stage(id).auto))+'.</p>';
+    }
+    return '<div class="block card"><div class="row"><h3>Результат</h3><span class="spacer"></span>'+(o&&o.found?'<span class="badge on">найден · '+esc(fmtWhen(o.at))+'</span>':'<span class="badge">ещё нет</span>')+'</div>'+inner+'</div>';
+  }
+  var SAMPLE=null,IMGLIM=null;
+  var ALPHA="АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ",DIGITS="0123456789 ₽ % + −";
+  function inkOn(hex){return lum(hex)>.42?"#0a0a0a":"#ffffff";}
+  function brandView(c,b,exact){
+    var p=b.palette,logo=c.logo?'<img src="'+esc(c.logo)+'" alt="Логотип">':"";
+    var mark='<span class="bmark">'+initials(c.name)+'</span>';
+    var fontCard=function(f,role){var w=+f.weight||400;var ws=[400,500,600,700,800].filter(function(x){return x===w||x===400||x===700;});
+      return '<div class="tcard"><div class="row"><b class="fname">'+esc(String(f.family).toUpperCase())+'</b><span class="spacer"></span>'+ws.map(function(x){return '<span class="wpill'+(x===w?" on":"")+'">'+({400:"Regular",500:"Medium",600:"Semibold",700:"Bold",800:"ExtraBold"}[x])+'</span>';}).join("")+'</div>'+
+        '<div class="aa" style="font-family:\''+esc(fam(f.family))+'\',sans-serif;font-weight:'+w+'">Аа</div><div class="abc" style="font-family:\''+esc(fam(f.family))+'\',sans-serif;font-weight:'+w+'">'+ALPHA+'<br>'+esc(DIGITS)+'</div><span class="role">'+role+'</span></div>';};
+    var tickets=["dark","dark2","accent","glow","light"].map(function(k){var hx=String(p[k]).toUpperCase(),rgb=hexRgb(p[k]).join(" ");
+      return '<div class="ticket" style="background:'+esc(p[k])+';color:'+inkOn(p[k])+'"><span class="tn">'+esc(PAL_NAMES[k])+'</span><b>'+esc(hx)+'</b><span>RGB '+rgb+'</span><i class="code"></i></div>';}).join("");
+    var logoTiles=c.logo?["dark2","light","accent"].map(function(k){return '<div class="ltile" style="background:'+esc(p[k])+'"><div class="clear">'+logo+'</div></div>';}).join(""):'<div class="ltile empty"><span class="muted">Лого не загружено</span></div>';
+    return '<div class="bsec bcover"><div class="cv-in">'+(logo?'<span class="cvlogo">'+logo+'</span>':mark)+'<span class="lbl">Брендбук</span><b class="d">'+esc(c.name||"Клиент")+'</b><span class="mt">'+esc(c.topic||"")+'</span></div><span class="cvname">'+esc(exact?"Стиль из брендбука клиента · превью условное":(b.name||""))+'</span></div>'+
+      '<div class="bsec"><div class="bh"><span class="no">01</span><h3>Типографика</h3></div><div class="ttwo">'+fontCard(b.fonts.display,"Заголовки, цифры, акценты")+fontCard(b.fonts.body,"Подписи, пояснения, списки")+'</div></div>'+
+      '<div class="bsec"><div class="bh"><span class="no">02</span><h3>Цвета</h3></div><div class="tickets">'+tickets+'</div>'+
+        '<div class="minor">'+["light2","metal","graphite","card","positive","negative"].map(function(k){return '<span><i style="background:'+esc(p[k])+'"></i>'+esc(PAL_NAMES[k])+' <code>'+esc(String(p[k]).toUpperCase())+'</code></span>';}).join("")+'</div></div>'+
+      '<div class="bsec"><div class="bh"><span class="no">03</span><h3>Логотип</h3><span class="spacer"></span><button type="button" class="btn sm" id="logob">'+(c.logo?"Заменить":"Загрузить лого")+'</button>'+(c.logo?'<button type="button" class="btn sm ghost" id="logorm">Убрать</button>':"")+'<input type="file" id="logof" accept="image/png,image/jpeg,image/svg+xml,image/webp" hidden></div>'+
+        '<div class="ltiles">'+logoTiles+'</div>'+(c.logo?'<p class="muted tiny">Пунктир — охранное поле: внутри него не размещаем текст и графику.</p>':'<p class="muted tiny">Необязательно. PNG с прозрачностью, JPG или SVG. Без лого графика обходится типографикой.</p>')+'</div>'+
+      '<div class="bsec"><div class="bh"><span class="no">04</span><h3>Графика в кадре</h3></div>'+exampleSet(c)+'</div>';
+  }
+  function exampleSet(c){
+    var v=fmtKey(c.format)==="v",logo=c.logo?'<img class="exlogo" src="'+esc(c.logo)+'" alt="">':'<span class="exmark">'+initials(c.name)+'</span>';
+    var t=esc(c.name||"Название канала"),tp=esc(c.topic||"тема канала");
+    var ex=[
+      ["Заставка",'<div class="ex dark center">'+logo+'<b class="d big">'+t+'</b><span class="mt">'+tp+'</span></div>'],
+      ["Титр на кадре",'<div class="ex frame"><i class="person"></i><div class="lt"><b class="d">'+t+'</b><span>'+tp+'</span></div></div>'],
+      ["Ключевая цифра",'<div class="ex dark center"><b class="d num">3×</b><span class="mt">подпись к цифре</span></div>'],
+      ["Сравнение",'<div class="ex light"><b class="d">Было и стало</b><div class="bars"><span>Было</span><i style="width:90%"></i><span>Стало</span><i class="a" style="width:38%"></i></div></div>'],
+      ["Список",'<div class="ex light"><ul><li><i class="pos">+</i>Первый тезис</li><li><i class="pos">+</i>Второй тезис</li><li><i class="neg">−</i>Чего избегать</li></ul></div>'],
+      ["Цитата",'<div class="ex dark"><span class="qbar"></span><b class="d">Главная мысль ролика <em>одной фразой</em></b></div>']
+    ];
+    return '<div class="exgrid'+(v?" v":"")+'">'+ex.map(function(e){return '<figure><div class="exw">'+e[1]+'</div><figcaption>'+e[0]+'</figcaption></figure>';}).join("")+'</div>';
+  }
+  var HEART='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.6a4.3 4.3 0 0 1 7.5 2.7c0 5.6-7.5 10.2-7.5 10.2z" fill="currentColor"/></svg>';
+  var CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  function stageBody(c,id){
+    var h="";
+    if(id==="info"){
+      var au=c.audience;
+      var chipsG=function(g){var A=AUD[g];return '<div class="grp"><h3>'+esc(A.title)+(A.hint?' <span class="muted hint">'+esc(A.hint)+'</span>':"")+'</h3><div class="achips" role="'+(A.multi?"group":"radiogroup")+'" aria-label="'+esc(A.title)+'">'+
+        A.options.map(function(o){var on=A.multi?au[g].indexOf(o.id)>=0:au[g]===o.id;return '<button type="button" class="chip" '+(A.multi?'aria-pressed':'role="radio" aria-checked')+'="'+on+'" data-aud="'+g+'" data-v="'+esc(o.id)+'">'+esc(o.name)+'</button>';}).join("")+'</div></div>';};
+      var cardsG=function(key,list,cur){return '<div class="opts sm" role="radiogroup">'+list.map(function(o){return '<button type="button" class="opt card compact" role="radio" aria-checked="'+(cur===o.id)+'" data-aud="'+key+'" data-v="'+esc(o.id)+'"><span class="tx"><b>'+esc(o.name)+'</b>'+(o.desc?'<span>'+esc(o.desc)+'</span>':"")+'</span></button>';}).join("")+'</div>';};
+      h='<div class="form"><label class="f"><b>Имя клиента *</b><input type="text" id="f-name" value="'+esc(c.name)+'" placeholder="Например, Анна Смирнова" autocomplete="off"></label>'+
+        '<label class="f"><b>Тематика канала *</b><input type="text" id="f-topic" value="'+esc(c.topic)+'" placeholder="Стройка, бьюти, финансы…" autocomplete="off"></label>'+
+        '<label class="f full"><b>Примечание</b><textarea id="f-note" placeholder="Необязательно: что важно знать о клиенте">'+esc(c.note)+'</textarea></label></div>'+
+        groupBlock(c,"format")+
+        (audienceDone(c)&&!S.editAud?(function(){var a=c.audience,p=posOpt(c.positioning);return '<div class="block card tight"><div class="row"><h3>Аудитория и позиционирование</h3><span class="spacer"></span><button type="button" class="btn sm" id="audedit">Изменить</button></div>'+
+            '<p class="muted">'+esc([ages(c).map(function(o){return o.name;}).join(", "),audOpt("gender",a.gender).name.toLowerCase(),audOpt("level",a.level).name.toLowerCase(),"доход: "+audOpt("income",a.income).name.toLowerCase(),p.name].join(" · "))+'</p></div>';})():
+        '<h3 class="sub">Целевая аудитория</h3>'+chipsG("age")+chipsG("gender")+
+        '<div class="grp"><h3>'+esc(AUD.level.title)+'</h3>'+cardsG("level",AUD.level.options,au.level)+'</div>'+chipsG("income")+
+        '<h3 class="sub">'+esc(POS.title)+'</h3><p class="muted">Влияет на рекомендации в следующих этапах. Выбор всегда за вами.</p>'+cardsG("pos",POS.options,c.positioning)+
+        (S.editAud&&audienceDone(c)?'<div class="row"><button type="button" class="btn" id="auddone">Готово</button></div>':""))+
+        '<div class="block card"><h3>Папка клиента</h3><p class="muted">'+(ROOT?"Сайт сам создаст её в главной папке «"+esc(ROOT.name)+"», когда вы укажете имя.":"Подключите главную папку на странице клиентов — сайт будет создавать такие папки сам.")+' Claude Code запускайте в ней.</p><pre class="prompt tree">'+esc((c.dir||safeName(c.name||"Клиент"))+"/\n  "+F.src+"/\n  "+F.refs+"/\n  "+F.brand+"/\n  "+F.pr+"/\n    "+[F.stages.cut,F.stages.graphics,F.stages.test,F.stages.final].join("/  v01, v02…\n    ")+"/  v01, v02…\n  "+F.tech+"/   задания, шаблоны, рабочие файлы\n  "+F.readme)+'</pre></div>'+
+        '<div class="danger">'+(S.confirmDel?'<span>Удалить клиента «'+esc(c.name)+'» без возможности восстановить?</span><button type="button" class="btn sm" id="delyes">Удалить</button><button type="button" class="btn sm ghost" id="delno">Отмена</button>':(c.name&&DB.clients[c.id]?'<button type="button" class="btn sm ghost" id="del">Удалить клиента</button>':""))+'</div>';
+    }else if(id==="brand"){
+      var b=buildBrand(c),exact=(c.answers||{}).style==="exact",last=c.brandLog[0],here=!!(SAMPLE&&IMGLIM);
+      var buildHere=!here?"":'<div class="block card act"><div class="row"><h3>'+(exact?"Перенести брендбук клиента":"Собрать стиль по референсам")+'</h3><span class="spacer"></span><span class="onote">прямо здесь, через Claude</span></div>'+
+        (exact?"":remind())+
+        '<p class="muted">'+(exact?"Загрузите скриншоты страниц брендбука клиента (цвета, шрифты, лого).":"Загрузите референсы картинками.")+' До '+IMGLIM.maxCount+' изображений, они не сохраняются на сайте.</p>'+
+        '<div class="refgrid">'+S.refImgs.map(function(x,i){return '<figure><img src="'+x.url+'" alt=""><button type="button" class="rx" data-rx="'+i+'" aria-label="Убрать картинку">×</button></figure>';}).join("")+
+          (S.refImgs.length<IMGLIM.maxCount?'<button type="button" class="refadd" id="refadd">+ Добавить</button>':"")+'</div><input type="file" id="reff" accept="image/*" multiple hidden>'+
+        '<div class="row"><button type="button" class="btn pri" id="bbuild"'+(S.refImgs.length?"":" disabled")+'>'+(exact?"Перенести стиль":"Собрать брендбук")+'</button><span class="msg" id="bbmsg" aria-live="polite"></span></div>'+
+        '<details><summary>Или через Claude Code: папка brand/ и '+esc(CFG.commands.brand)+'</summary>'+promptBlock(c,"brand")+'</details></div>';
+      h=groupBlock(c,"style")+(here?buildHere:(exact?"":remind())+promptBlock(c,"brand"))+
+        '<div class="bb'+(b.texture==="grain"?" tex-grain":"")+'" style="'+brandVars(b)+'">'+brandView(c,b,exact)+'</div>'+
+        '<div class="block card"><h3>Правки брендбука</h3>'+
+          '<p class="muted">'+(SAMPLE?"Напишите, что поменять, и нажмите «Применить»: Claude обновит цвета, шрифты или стиль, брендбук выше перерисуется.":"Напишите, что поменять, и нажмите «Применить»: запрос скопируется. Отправьте его в Claude и вставьте ответ ниже, брендбук перерисуется.")+'</p>'+
+          '<textarea id="bedit" placeholder="Например: акцент теплее, заголовки тоньше, тёмный фон чуть светлее">'+esc(c.brandDraft||"")+'</textarea>'+
+          '<div class="row"><button type="button" class="btn pri" id="bapply">Применить</button>'+(c.brandPrev!==undefined?'<button type="button" class="btn ghost" id="bundo">Отменить последнюю правку</button>':"")+(c.brandOverride?'<button type="button" class="btn ghost" id="resetb">Сбросить к выбранному стилю</button>':"")+'<span class="msg" id="bmsg" aria-live="polite"></span></div>'+
+          (last?'<div class="hist">'+c.brandLog.slice(0,4).map(function(x){return '<div><b>'+esc(x.text)+'</b>'+(x.note?' → '+esc(x.note):"")+'</div>';}).join("")+'</div>':"")+
+          '<details id="pdet"'+(SAMPLE?"":" open")+'><summary>'+(SAMPLE?"Вставить ответ Claude вручную":"Ответ Claude")+'</summary>'+
+            '<div class="row" style="margin:10px 0"><button type="button" class="btn sm" id="copyr">Скопировать запрос для чата Claude</button><span class="muted tiny">если нет Claude Code: приложите референсы в чате</span></div>'+
+            '<label class="f"><b>Ответ Claude (JSON)</b><textarea id="paste" placeholder="{ &quot;palette&quot;: { … }, &quot;note&quot;: &quot;…&quot; }" class="mono"></textarea></label>'+
+            '<div class="row" style="margin-top:8px"><button type="button" class="btn" id="apply">Применить ответ</button></div><div id="perr" aria-live="polite"></div></details>'+
+        '</div>'+
+        '<label class="chk big card"><input type="checkbox" id="appr"'+(c.approved?" checked":"")+'> Утверждён клиентом</label>';
+    }else if(id==="cut"){
+      h=groupBlock(c,"cutMode")+groupBlock(c,"cutPauses")+groupBlock(c,"cutTakes")+(ans(c,"cutMode")==="mark"?labelPicker(c):"")+promptBlock(c,"cut")+resultBlock(c,"cut");
+    }else if(id==="graphics"){
+      var list=brolls(c);
+      var gbody=list.length?'<p class="muted">Отметьте сердечком удачное и напишите правки. Это уйдёт в следующий промт графики и в тестовую минуту.</p><div class="grid">'+list.map(function(s,i){var on=!!c.likes[s.id];var u=urls["g:"+s.id],po=urls["p:"+s.id];
+          return '<article class="tile'+(on?" on":"")+'" data-id="'+esc(s.id)+'"><div class="vbox">'+(u?'<video src="'+u+'"'+(po?' poster="'+po+'"':"")+' muted loop playsinline preload="metadata" controls></video>':'<span class="muted">Превью не загружено. Нажмите «Обновить» в блоке папки.</span>')+'</div>'+
+            '<div class="tmeta"><b><span class="k">'+esc(s.start||("№"+(i+1)))+'</span>'+esc(s.name)+(s.type?'<span class="tag">'+esc(s.type)+'</span>':"")+'</b><button type="button" class="like" aria-pressed="'+on+'" aria-label="Утвердить: '+esc(s.name)+'">'+HEART+'</button></div>'+
+            (s.text||s.speech?'<p class="bmeta">'+(s.text?'<span>На экране: '+esc(s.text)+'</span>':"")+(s.speech?'<span>Речь: «'+esc(s.speech)+'»</span>':"")+'</p>':"")+
+            '<textarea aria-label="Правка к '+esc(s.name)+'" placeholder="Правка: что поменять">'+esc(c.notes[s.id]||"")+'</textarea></article>';}).join("")+'</div>':null;
+      var th=topicHint(c);
+      h=groupBlock(c,"gLayouts")+groupBlock(c,"tracking")+groupBlock(c,"motion")+
+        '<div class="block card tight"><h3>Адаптация под тематику</h3><p class="muted">'+(th.length?"Для «"+esc(c.topic)+"» в промт уйдёт: "+esc(th.join("; "))+".":"Тематика «"+esc(c.topic||"—")+"» не нашлась в подсказках: Claude Code подберёт типы графики сам. Подсказки можно дополнить в конфиге (topicHints).")+'</p></div>'+
+        promptBlock(c,"graphics")+resultBlock(c,"graphics",gbody);
+    }else if(id==="test"){
+      h=groupBlock(c,"pace")+groupBlock(c,"music")+groupBlock(c,"sfx")+groupBlock(c,"subs")+promptBlock(c,"test")+resultBlock(c,"test");
+    }else if(id==="final"){
+      h='<label class="f"><b>Правки после тестовой минуты</b><textarea id="f-final" placeholder="Что поменять относительно тестовой минуты: громкость музыки, частота вставок, стиль титров…">'+esc(c.finalNote)+'</textarea></label>'+
+        '<p class="muted">Настройки монтажа берутся с этапа «Тестовая минута»: частота — '+esc(lc1(label(c,"pace")))+', музыка — '+esc(lc1(label(c,"music")))+', SFX — '+esc(lc1(label(c,"sfx")))+', субтитры — '+esc(lc1(label(c,"subs")))+'.</p>'+
+        promptBlock(c,"final")+resultBlock(c,"final");
+    }
+    return h;
+  }
+  function renderProject(){
+    var ae=document.activeElement,keep=ae&&ae.id&&/^(INPUT|TEXTAREA)$/.test(ae.tagName)?{id:ae.id,s:ae.selectionStart,e:ae.selectionEnd}:null;
+    if(S.card&&keep)collectInfo(S.card);
+    renderProject0();
+    if(keep){var el=$(keep.id);if(el){el.focus();try{el.setSelectionRange(keep.s,keep.e);}catch(e){}}}
+    else if(S.card&&!S.card.name&&S.stage==="info"&&$("f-name"))$("f-name").focus();
+  }
+  function renderProject0(){
+    var c=S.card,id=S.stage,s=stage(id),idx=STAGES.indexOf(s),n=doneCount(c),fo=c.folder;
+    var y=window.scrollY,same=S._last===id;S._last=id;
+    var h='<div class="ptop"><div class="wrap wide ptop-in"><button type="button" class="btn sm ghost" id="bk">← Клиенты</button>'+
+        '<button type="button" class="av sm" id="avbtn" aria-label="'+(c.avatar?"Сменить фото":"Загрузить фото")+' клиента" title="'+(c.avatar?"Сменить фото":"Загрузить фото")+'"'+(c.name?"":" disabled")+'>'+(c.avatar?'<img src="'+esc(c.avatar)+'" alt="">':'<span>'+initials(c.name)+'</span>')+'</button>'+
+        '<div class="pname"><b>'+esc(c.name||"Новый клиент")+'</b><span class="muted">'+esc(c.topic||"заполните информацию")+'</span></div><span class="spacer"></span>'+
+        '<span class="muted pcount">Этапов '+n+' из '+STAGES.length+'</span><input type="file" id="avf" accept="image/*" hidden></div></div>'+
+      '<div class="wrap wide">'+
+      '<div class="proj"><nav class="steps" aria-label="Этапы работы с клиентом"><ol>'+STAGES.map(function(st,i){var ad=autoDone(c,st.id),d=isDone(c,st.id);
+          return '<li class="'+(st.id===id?"cur ":"")+(d?"done":"")+'"><button type="button" class="ck" data-ck="'+st.id+'" role="checkbox" aria-checked="'+d+'" aria-label="'+esc(st.title)+(ad?": выполнено автоматически":": отметить вручную")+'" title="'+esc(ad?"Отмечено автоматически: "+lc1(st.auto):"Отметить вручную. Автоматически: "+lc1(st.auto))+'">'+(d?CHECK:"")+'</button>'+
+            '<button type="button" class="st" data-st="'+st.id+'"'+(st.id===id?' aria-current="step"':"")+'><b>'+(i+1)+". "+esc(st.title)+'</b><span>'+esc(st.desc)+(ad?" · авто":"")+'</span></button></li>';}).join("")+'</ol>'+
+        '<div class="fold card" id="drop"><b>Папка клиента</b>'+
+          (ROOT?'<span class="muted">'+(c.dir?FOLDER_IC+" "+esc(ROOT.name+" / "+c.dir)+(fo&&fo.at?" · "+esc(fmtWhen(fo.at)):""):"Создастся в «"+esc(ROOT.name)+"», когда укажете имя клиента.")+'</span>'+
+              (c.dir?'<div class="row"><button type="button" class="btn sm pri" id="conn">Обновить</button></div><span class="muted tiny">Подтягивает результаты Claude Code и записывает задания.</span>':"")
+          :hasFSA?'<span class="muted">'+(c.dir&&handles[c.id]?esc(c.dir)+(fo&&fo.at?" · "+esc(fmtWhen(fo.at)):""):"Главная папка не подключена. Подключите её на странице клиентов — или выберите папку клиента вручную.")+'</span>'+
+              '<div class="row"><button type="button" class="btn sm pri" id="conn"'+(c.name?"":" disabled")+'>'+(handles[c.id]||c.folder?"Обновить":"Выбрать папку клиента")+'</button></div>'
+          :'<span class="muted">Этот браузер не умеет записывать в папки. Можно выбрать или перетащить папку клиента, чтобы подтянуть результаты.</span><div class="row"><button type="button" class="btn sm pri" id="pick"'+(c.name?"":" disabled")+'>Выбрать папку</button></div><span class="muted tiny">или перетащите папку сюда</span>')+
+          '<input type="file" id="pickf" webkitdirectory directory multiple hidden><p id="fmsg" hidden></p></div></nav>'+
+        '<section class="stage-main" aria-labelledby="sth"><header class="shead"><span class="eyebrow">Этап '+(idx+1)+' из '+STAGES.length+(isDone(c,id)?" · готово":"")+'</span><h2 id="sth">'+esc(s.title)+'</h2><p class="muted">'+esc(s.desc)+'</p>'+usesRow(c,s)+'</header>'+
+          stageBody(c,id)+
+          '<div class="nav">'+(idx>0?'<button type="button" class="btn" id="prev">← '+esc(STAGES[idx-1].title)+'</button>':"")+'<span class="spacer"></span>'+(idx<STAGES.length-1?'<button type="button" class="btn pri" id="next">'+esc(STAGES[idx+1].title)+' →</button>':"")+'</div>'+
+        '</section></div></div>';
+    $("app").innerHTML=h;
+    if(same)window.scrollTo(0,y);
+    if(pendingMsg){setFolderMsg(pendingMsg.t,pendingMsg.soft);pendingMsg=null;}
+    bindProject(c,id);
+  }
+  function usesRow(c,s){
+    if(!s.uses||!s.uses.length)return "";
+    var miss=s.uses.filter(function(u){return !isDone(c,u);});
+    return '<div class="uses"><span class="muted">Берёт из:</span>'+s.uses.map(function(u){var d=isDone(c,u);return '<button type="button" class="dep'+(d?" ok":"")+'" data-st="'+u+'">'+(d?"✓ ":"")+esc(stage(u).title)+'</button>';}).join("")+
+      (miss.length?'<span class="warn">Сначала завершите: '+esc(miss.map(function(u){return stage(u).title;}).join(", "))+'</span>':"")+'</div>';
+  }
+  function collectInfo(c){if($("f-name")){c.name=$("f-name").value.trim();c.topic=$("f-topic").value.trim();c.note=$("f-note").value.trim();}if($("f-final"))c.finalNote=$("f-final").value.trim();}
+  function ensureClientFolder(c){if(!ROOT||c.dir||!c.name)return;clientDir(c,true).then(function(h){if(h){toast("Создана папка клиента: "+ROOT.name+" / "+h.name);if(S.view==="project"&&S.card===c)renderProject();}},function(e){toast("Не удалось создать папку: "+(e&&e.message||""));});}
+  function leave(c){collectInfo(c);if(!c.name){toast("Сначала укажите имя клиента");S.stage="info";var f=$("f-name");if(f)f.focus();return false;}saveCard(c);ensureClientFolder(c);return true;}
+  function bindProject(c,id){
+    $("bk").onclick=function(){collectInfo(c);if(c.name)saveCard(c);S.shared=false;go("home");};
+    $("avbtn").onclick=function(){$("avf").value="";$("avf").click();};
+    $("avf").onchange=function(){readImage(this.files&&this.files[0],160,true,function(d){c.avatar=d;saveCard(c);toast(storageOk?"Фото обновлено":"Не хватило места в браузере");renderProject();});};
+    $("app").querySelectorAll("[data-st]").forEach(function(b){b.onclick=function(){if(b.dataset.st===S.stage)return;if(!leave(c))return;S.stage=b.dataset.st;renderProject();window.scrollTo(0,0);};});
+    $("app").querySelectorAll("[data-ck]").forEach(function(b){b.onclick=function(){var sid=b.dataset.ck;collectInfo(c);
+      if(autoDone(c,sid)){toast("Отмечено автоматически: "+lc1(stage(sid).auto));return;}
+      if(!c.name){toast("Сначала укажите имя клиента");return;}
+      if(c.done[sid])delete c.done[sid];else c.done[sid]=true;saveCard(c);renderProject();};});
+    if($("prev"))$("prev").onclick=function(){if(!leave(c))return;S.stage=STAGES[STAGES.indexOf(stage(id))-1].id;renderProject();window.scrollTo(0,0);};
+    if($("next"))$("next").onclick=function(){if(!leave(c))return;S.stage=STAGES[STAGES.indexOf(stage(id))+1].id;renderProject();window.scrollTo(0,0);};
+    // папка проекта
+    if($("conn"))$("conn").onclick=function(){collectInfo(c);if(ROOT||handles[c.id]||c.folder)refreshFolder(c,false);else connectFolder(c);};
+    if($("pick"))$("pick").onclick=function(){$("pickf").click();};
+    $("pickf").onchange=function(){var fs=Array.prototype.slice.call(this.files||[]).map(function(f){return {path:(f.webkitRelativePath||f.name),file:f};});
+      if(!fs.length)return;var top=fs[0].path.split("/")[0];clearUrls();scan(c,mapGetter(fs),top).then(function(r){afterScan(c,r);}).catch(function(e){setFolderMsg(e.message,true);});};
+    var dz=$("drop");
+    dz.ondragover=function(e){e.preventDefault();dz.classList.add("over");};
+    dz.ondragleave=function(){dz.classList.remove("over");};
+    dz.ondrop=function(e){e.preventDefault();dz.classList.remove("over");if(!c.name){toast("Сначала укажите имя клиента");return;}
+      var ents=Array.prototype.slice.call(e.dataTransfer.items||[]).map(function(it){return it.webkitGetAsEntry&&it.webkitGetAsEntry();}).filter(Boolean);
+      if(!ents.length||!ents[0].isDirectory){setFolderMsg("Перетащите папку проекта целиком.",true);return;}
+      var outF=[];setFolderMsg("Читаю папку…",true);clearUrls();
+      readEntries(ents[0],"",outF).then(function(){return scan(c,mapGetter(outF),ents[0].name);}).then(function(r){afterScan(c,r);}).catch(function(err){setFolderMsg(err.message,true);});};
+    // варианты
+    $("app").querySelectorAll(".opt[data-g]").forEach(function(b){b.onclick=function(){
+      if(b.getAttribute("aria-disabled")==="true"){toast("Сначала выберите «Есть готовый» в блоке «Брендбук клиента»");return;}
+      collectInfo(c);var g=b.dataset.g,v=b.dataset.o;
+      if(g==="format")c.format=v;
+      else if(G[g].multi){var arr=(c.answers[g]||[]).slice(),k=arr.indexOf(v);if(k>=0){if(arr.length===1){toast("Нужна хотя бы одна раскладка");return;}arr.splice(k,1);}else arr.push(v);c.answers[g]=G[g].options.map(function(o){return o.id;}).filter(function(x){return arr.indexOf(x)>=0;});}
+      else c.answers[g]=v;
+      saveCard(c);renderProject();};});
+    $("app").querySelectorAll("[data-aud]").forEach(function(b){b.onclick=function(){collectInfo(c);
+      var g=b.dataset.aud,v=b.dataset.v;
+      if(g==="pos")c.positioning=v;else if(AUD[g].multi){var arr=c.audience[g],i=arr.indexOf(v);if(i>=0)arr.splice(i,1);else arr.push(v);
+        c.audience[g]=AUD[g].options.map(function(o){return o.id;}).filter(function(x){return arr.indexOf(x)>=0;});}
+      else c.audience[g]=v;
+      saveCard(c);renderProject();};});
+    $("app").querySelectorAll("[data-lab]").forEach(function(b){b.onclick=function(){c.answers[b.dataset.lab]=b.dataset.v;saveCard(c);renderProject();};});
+    ["f-name","f-topic","f-note","f-final"].forEach(function(k){var el=$(k);if(!el)return;var tm;
+      el.oninput=function(){clearTimeout(tm);tm=setTimeout(function(){collectInfo(c);saveCard(c);if(k==="f-name"||k==="f-topic"){var pn=document.querySelector(".pname b"),pt=document.querySelector(".pname .muted");if(pn)pn.textContent=c.name||"Новый клиент";if(pt)pt.textContent=c.topic||"заполните информацию";}},350);};
+      el.onchange=function(){collectInfo(c);saveCard(c);if(k==="f-name")ensureClientFolder(c);};});
+    if($("audedit"))$("audedit").onclick=function(){S.editAud=true;renderProject();};
+    if($("auddone"))$("auddone").onclick=function(){S.editAud=false;renderProject();};
+    if($("del"))$("del").onclick=function(){S.confirmDel=true;renderProject();};
+    if($("delno"))$("delno").onclick=function(){S.confirmDel=false;renderProject();};
+    if($("delyes"))$("delyes").onclick=function(){delete DB.clients[c.id];DB.deleted[c.id]=true;delete handles[c.id];persist();S.confirmDel=false;S.card=null;toast("Клиент удалён");go("home");};
+    // промт
+    if($("writet"))$("writet").onclick=function(){collectInfo(c);var b=this;b.disabled=true;writeStudio(c).then(function(){toast("Записано. В Claude Code: "+CFG.commands[id]);b.disabled=false;b.textContent="Записано ✓ — запустите "+CFG.commands[id];},function(e){b.disabled=false;toast("Не удалось записать: "+(e&&e.message||"нет доступа"));delete handles[c.id];renderProject();});};
+    if($("copyp"))$("copyp").onclick=function(){collectInfo(c);var on=!$("refs")||$("refs").checked;copyText(taskText(c,id),function(ok){toast(ok?(on?"Промт скопирован":"Промт скопирован. Не забудьте референсы"):"Не удалось скопировать: выделите текст вручную");});if(!on&&$("rw"))$("rw").hidden=false;};
+    if($("refs"))$("refs").onchange=function(){c.refs[id]=this.checked;$("rw").hidden=this.checked;saveCard(c);};
+    if($("f-final"))$("f-final").addEventListener("input",function(){var cp=$("cp");if(cp){collectInfo(c);cp.textContent=taskText(c,id);}});
+    // брендбук
+    if($("appr"))$("appr").onchange=function(){if(!leave(c)){this.checked=false;return;}c.approved=this.checked;saveCard(c);toast(c.approved?(autoDone(c,"brand")?"Брендбук утверждён":"Отмечено. Выберите стиль, чтобы этап закрылся"):"Отметка снята");renderProject();};
+    if($("logob")){$("logob").onclick=function(){$("logof").value="";$("logof").click();};$("logof").onchange=function(){readImage(this.files&&this.files[0],512,false,function(d){c.logo=d;saveCard(c);if(!storageOk){c.logo="";toast("Не хватило места в браузере для лого");}else toast("Лого загружено");renderProject();});};}
+    if($("logorm"))$("logorm").onclick=function(){c.logo="";saveCard(c);renderProject();};
+    if($("bedit"))$("bedit").oninput=function(){c.brandDraft=this.value;saveCard(c);};
+    var applyResult=function(r,text){var box=$("perr");
+      if(r.err){if(box)box.innerHTML='<p class="err">Не применено:</p><ul class="err">'+r.err.slice(0,8).map(function(e){return "<li>"+esc(e)+"</li>";}).join("")+'</ul>';var d=$("pdet");if(d)d.open=true;return false;}
+      c.brandPrev=c.brandOverride?clone(c.brandOverride):null;c.brandOverride=mergeOverride(c.brandOverride,r.ok);
+      c.brandLog.unshift({text:text||"ответ Claude",note:r.ok.note?String(r.ok.note).slice(0,200):"",at:new Date().toISOString()});c.brandLog=c.brandLog.slice(0,10);
+      c.brandDraft="";if(c.approved){c.approved=false;toast("Брендбук изменён: отметка «Утверждён» снята");}else toast("Брендбук обновлён");
+      saveCard(c);renderProject();return true;};
+    if($("bapply"))$("bapply").onclick=function(){collectInfo(c);var t=$("bedit").value.trim(),btn=this,m=$("bmsg");
+      if(!t){toast("Напишите, что поменять");$("bedit").focus();return;}
+      if(!SAMPLE){copyText(refinePrompt(c,t),function(ok){toast(ok?"Запрос скопирован: отправьте в Claude, ответ вставьте ниже":"Не удалось скопировать");});var d=$("pdet");if(d)d.open=true;var pa=$("paste");if(pa)pa.focus();return;}
+      btn.disabled=true;btn.textContent="Claude вносит правки…";m.textContent="обычно 10–30 секунд";
+      SAMPLE.json(refinePrompt(c,t),{cache:false}).then(function(res){if(!applyResult(parseClaude(res),t)){btn.disabled=false;btn.textContent="Применить";m.textContent="";}})
+        .catch(function(e){btn.disabled=false;btn.textContent="Применить";var code=e&&e.code;
+          m.textContent=code==="rate_limited"?"Лимит запросов, подождите минуту":code==="not_granted"?"Нет доступа к Claude: скопирую запрос":"Не получилось, попробуйте ещё раз";m.className="msg err";
+          if(code==="not_granted"){SAMPLE=null;copyText(refinePrompt(c,t),function(){});var d=$("pdet");if(d)d.open=true;}});};
+    if($("refadd"))$("refadd").onclick=function(){$("reff").value="";$("reff").click();};
+    if($("reff"))$("reff").onchange=function(){var fs=Array.prototype.slice.call(this.files||[]).filter(function(f){return /^image\//.test(f.type);}).slice(0,IMGLIM.maxCount-S.refImgs.length);
+      Promise.all(fs.map(function(f){return new Promise(function(res){var u=URL.createObjectURL(f),im=new Image();im.onload=function(){var k=Math.min(1,1280/Math.max(im.width,im.height)),cv=document.createElement("canvas");cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);cv.getContext("2d").drawImage(im,0,0,cv.width,cv.height);URL.revokeObjectURL(u);cv.toBlob(function(bl){res(bl?{blob:bl,url:URL.createObjectURL(bl)}:null);},"image/jpeg",.85);};im.onerror=function(){URL.revokeObjectURL(u);res(null);};im.src=u;});}))
+        .then(function(arr){arr.filter(Boolean).forEach(function(x){S.refImgs.push(x);});renderProject();});};
+    $("app").querySelectorAll("[data-rx]").forEach(function(b){b.onclick=function(){var x=S.refImgs.splice(+b.dataset.rx,1)[0];if(x)URL.revokeObjectURL(x.url);renderProject();};});
+    if($("bbuild"))$("bbuild").onclick=function(){collectInfo(c);var btn=this,m=$("bbmsg");btn.disabled=true;btn.textContent="Claude собирает стиль…";m.textContent="до минуты";m.className="msg";
+      SAMPLE.json(refinePrompt(c),{images:S.refImgs.map(function(x){return x.blob;}),modelTier:"complex",cache:false}).then(function(res){
+        if(!applyResult(parseClaude(res),(c.answers.style==="exact"?"Перенос брендбука":"Сборка по референсам")+" ("+S.refImgs.length+" изобр.)")){btn.disabled=false;btn.textContent="Попробовать ещё раз";m.textContent="";}})
+        .catch(function(e){btn.disabled=false;btn.textContent="Собрать брендбук";var code=e&&e.code;m.className="msg err";m.textContent=code==="rate_limited"?"Лимит запросов, подождите минуту":code==="not_granted"?"Нет доступа к Claude в этом окне":code==="images_unavailable"?"Картинки сюда отправить нельзя: используйте Claude Code":"Не получилось, попробуйте ещё раз";});};
+    if($("bundo"))$("bundo").onclick=function(){c.brandOverride=c.brandPrev;delete c.brandPrev;c.brandLog.shift();saveCard(c);toast("Последняя правка отменена");renderProject();};
+    if($("copyr"))$("copyr").onclick=function(){collectInfo(c);copyText(refinePrompt(c),function(ok){toast(ok?"Запрос скопирован. Приложите референсы":"Не удалось скопировать");});};
+    if($("resetb"))$("resetb").onclick=function(){c.brandPrev=c.brandOverride?clone(c.brandOverride):null;c.brandOverride=null;saveCard(c);toast("Стиль сброшен к выбранному варианту");renderProject();};
+    if($("apply"))$("apply").onclick=function(){applyResult(parseClaude($("paste").value),$("bedit")&&$("bedit").value.trim());};
+    // графика
+    $("app").querySelectorAll(".tile").forEach(function(t){
+      var tid=t.dataset.id,v=t.querySelector("video");
+      if(v){t.onmouseenter=function(){var p=v.play();if(p&&p.catch)p.catch(function(){});};t.onmouseleave=function(){v.pause();};}
+      t.querySelector(".like").onclick=function(){if(c.likes[tid])delete c.likes[tid];else c.likes[tid]=true;var on=!!c.likes[tid];this.setAttribute("aria-pressed",on);t.classList.toggle("on",on);saveCard(c);var cp=$("cp");if(cp)cp.textContent=taskText(c,id);};
+      var tm;t.querySelector("textarea").oninput=function(){var val=this.value;clearTimeout(tm);tm=setTimeout(function(){if(val.trim())c.notes[tid]=val.trim();else delete c.notes[tid];saveCard(c);var cp=$("cp");if(cp)cp.textContent=taskText(c,id);},400);};
+    });
+    // ранее подключённая папка подтягивается сама, если браузер помнит разрешение
+    if(hasFSA&&(c.folder||(ROOT&&c.dir))&&!autoTried[c.id]&&!Object.keys(urls).length){autoTried[c.id]=1;refreshFolder(c,true);}
+  }
+
+  function render(){if(S.view==="project"&&S.card)renderProject();else renderHome();}
+
+  // ===== Старт =====
+  try{if(window.claude&&window.claude.use)window.claude.use("sample").then(function(s){if(!s)return;SAMPLE=s;
+    return s.limits().then(function(l){IMGLIM=l&&l.images&&l.images.maxCount?l.images:null;},function(){}).then(function(){if(S.view==="project"&&S.stage==="brand")renderProject();});},function(){});}catch(e){}
+  render();
+  if(hasFSA)restoreRoot(false).then(function(ok){if(ok)return discover();}).then(function(){if(S.view==="home")render();},function(){});
+})();
+
+</script>
+</body>
+</html>
