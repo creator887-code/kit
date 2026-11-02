@@ -1,0 +1,8 @@
+{
+  "name": "kit",
+  "description": "Инструменты для монтажа",
+  "owner": { "name": "Студия" },
+  "plugins": [
+    { "name": "studio", "source": "./plugins/studio", "description": "Этапы монтажа для Claude Code" }
+  ]
+}
